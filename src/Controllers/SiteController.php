@@ -8,7 +8,7 @@ class SiteController extends Controller
 {
     public function index()
     {
-        return $this->app->renderView('index', ['a' => 'aaaaaaaaa']);
+        return $this->app->renderView('index');
     }
 
     public function poll(string $uid)

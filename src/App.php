@@ -3,7 +3,6 @@
 namespace Polls;
 
 use Polls\Controllers\APIController;
-use Polls\Controllers\Controller;
 use Polls\Controllers\SiteController;
 
 class App
@@ -13,6 +12,16 @@ class App
     private $payload = [];
 
     const VIEWS_DIR = __DIR__ . '/../views/';
+    const API_MAP = [
+        'GET' => [
+            'user' => 'readUser'
+        ],
+        'POST' => [
+            'poll' => 'createPoll',
+            'user' => 'createUser',
+            'vote' => 'createVote'
+        ]
+    ];
 
     public function __construct()
     {
@@ -25,10 +34,9 @@ class App
 
     public function run()
     {
-        $router = new Router();
-        $chunks = $router->getChunks();
+        $chunks = $this->getPathChunks();
         $method = $_SERVER['REQUEST_METHOD'] ? $_SERVER['REQUEST_METHOD'] : 'GET';
-        $controller = new Controller($this);
+        $controller = null;
         $action = '';
         $parameters = [];
         $pageTitle = '';
@@ -40,17 +48,12 @@ class App
         }
 
         if ($chunks[0] === 'api') {
-            if ($method === 'POST') {
-                $this->payload = json_decode(file_get_contents('php://input'), true);
-            } else {
-                $this->payload = array_slice($chunks, 2);
-            }
-            $APIMap = $router->getAPIMap();
+            $this->payload = ($method === 'POST')
+                ? json_decode(file_get_contents('php://input'), true)
+                : $this->payload = array_slice($chunks, 2);
             $controller = new APIController($this);
-            $action = isset($APIMap[$method][$chunks[1]]) ? $APIMap[$method][$chunks[1]] : false;
-        }
-
-        if ($chunks[0] === 'poll') {
+            $action = isset(self::API_MAP[$method][$chunks[1]]) ? self::API_MAP[$method][$chunks[1]] : false;
+        } else if ($chunks[0] === 'poll') {
             $controller = new SiteController($this);
             $action = 'poll';
             $parameters = [$chunks[1]];
@@ -67,36 +70,10 @@ class App
         if ($controller instanceof APIController) {
             header('Content-Type: application/json');
             echo $content;
-            return true;
+        } else {
+            echo $this->renderView('layout', compact('content', 'pageTitle'));
         }
-
-        echo $this->renderView('layout', compact('content', 'pageTitle'));
-    }
-
-    private function loadConfig()
-    {
-        $env = 'production';
-        if (file_exists(__DIR__ . '/../config/config.local.php')) {
-            $env = 'local';
-        } else if (isset($_SERVER['APP_ENV']) && in_array($_SERVER['APP_ENV'], ['staging', 'local'])) {
-            $env = $_SERVER['APP_ENV'];
-        }
-        require_once(__DIR__ . '/../config/config.' . $env . '.php');
-    }
-
-    public function getConfigVar($var = null)
-    {
-        $path = is_array($var) ? $var : [$var];
-        $arr = $this->config;
-        foreach ($path as $key) {
-            if (array_key_exists($key, $arr)) {
-                $arr = $arr[$key];
-            } else {
-                $arr = false;
-                break;
-            }
-        }
-        return $arr;
+        return true;
     }
 
     public function pdo()
@@ -122,4 +99,36 @@ class App
         return $output;
     }
 
+    private function loadConfig()
+    {
+        $env = 'production';
+        if (file_exists(__DIR__ . '/../config/config.local.php')) {
+            $env = 'local';
+        } else if (isset($_SERVER['APP_ENV']) && in_array($_SERVER['APP_ENV'], ['staging', 'local'])) {
+            $env = $_SERVER['APP_ENV'];
+        }
+        require_once(__DIR__ . '/../config/config.' . $env . '.php');
+    }
+
+    private function getConfigVar($var = null)
+    {
+        $path = is_array($var) ? $var : [$var];
+        $arr = $this->config;
+        foreach ($path as $key) {
+            if (array_key_exists($key, $arr)) {
+                $arr = $arr[$key];
+            } else {
+                $arr = false;
+                break;
+            }
+        }
+        return $arr;
+    }
+
+    private function getPathChunks() : array
+    {
+        $uri = trim($_SERVER['REQUEST_URI'], '/');
+        $chunks = $uri ? explode('/', $uri) : [];
+        return $chunks;
+    }
 }
