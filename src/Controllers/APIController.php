@@ -2,6 +2,7 @@
 
 namespace Polls\Controllers;
 
+use Polls\Services\AnswersCRUD;
 use Polls\Services\PollsCRUD;
 use Polls\Services\UsersCRUD;
 use Polls\Services\VotesCRUD;
@@ -50,7 +51,6 @@ class APIController extends Controller
         $uid = isset($payload['userUid']) ? $payload['userUid'] : '';
         $usersService = new UsersCRUD($this->app->pdo());
         $user = $usersService->read($uid);
-
         if (!$user->getId()) {
             return $this->app->renderView('json', [
                 'data' => $user,
@@ -59,8 +59,18 @@ class APIController extends Controller
             ]);
         };
 
+        $answerId = isset($payload['answerId']) ? $payload['answerId'] : null;
+        $answersService = new AnswersCRUD($this->app->pdo());
+        $answer = $answersService->read($answerId);
+        if (!$answer->getId()) {
+            return $this->app->renderView('json', [
+                'success' => $answersService->getSuccess(),
+                'message' => $answersService->getMessage()
+            ]);
+        }
+
         $votesService = new VotesCRUD($this->app->pdo());
-        $votesService->create($user, $this->app->payload());
+        $votesService->create($user, $answer, $payload);
         return $this->app->renderView('json', [
             'data' => [],
             'success' => $votesService->getSuccess(),

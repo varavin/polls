@@ -12,6 +12,7 @@ class PollsCRUD extends CRUD
         $dataNew = $data;
         $dataNew['uid'] = md5(uniqid());
         if (!$poll->fill($dataNew) || !$poll->validate()) {
+            $this->setStatus(false, 'Poll data not valid.');
             return new Poll();
         }
         $sql = 'INSERT INTO polls (uid, authorName, question) VALUES (:uid, :authorName, :question)';
@@ -21,6 +22,7 @@ class PollsCRUD extends CRUD
             ':question' => $poll->getQuestion()
         ];
         if (!$this->pdo()->prepare($sql)->execute($params)) {
+            $this->setStatus(false, 'Error while creating poll.');
             return new Poll();
         };
         $id = $this->pdo()->lastInsertId();
@@ -35,6 +37,7 @@ class PollsCRUD extends CRUD
         $row = $this->pdo()->query($sql)->fetch(\PDO::FETCH_ASSOC);
         $poll = new Poll();
         if ( ! ($row && $poll->fill($row) && $poll->validate())) {
+            $this->setStatus(false, 'Poll not found.');
             return new Poll();
         }
         $answersService = new AnswersCRUD($this->pdo());

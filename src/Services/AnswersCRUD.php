@@ -18,6 +18,7 @@ class AnswersCRUD extends CRUD
             ':text' => $answer->getText()
         ];
         if (!$this->pdo()->prepare($sql)->execute($params)) {
+            $this->setStatus(false, 'Error while creating answer.');
             return new Answer();
         }
         $id = $this->pdo()->lastInsertId();
@@ -33,6 +34,7 @@ class AnswersCRUD extends CRUD
         if ($row && $answer->fill($row) && $answer->validate()) {
             return $answer;
         } else {
+            $this->setStatus(false, 'Answer not found or not valid.');
             return new Answer();
         }
     }

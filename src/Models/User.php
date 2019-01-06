@@ -16,6 +16,11 @@ class User extends Model
     private $id = 0;
     private $uid = '';
 
+    public function __construct(\PDO $pdo)
+    {
+        parent::__construct($pdo);
+    }
+
     public function getId()
     {
         return $this->id;
@@ -45,12 +50,11 @@ class User extends Model
         ];
     }
 
-    //TODO: have to pass PDO instance some other way
-    public function hasVoted(int $pollId, \PDO $pdo) : bool
+    public function hasVoted(int $pollId) : bool
     {
-        $answersService = new AnswersCRUD($pdo);
+        $answersService = new AnswersCRUD($this->pdo());
         $answersIds = array_keys($answersService->getByPollId($pollId));
-        $votesService = new VotesCRUD($pdo);
+        $votesService = new VotesCRUD($this->pdo());
         $votes = $votesService->readMultiple($answersIds, $this->getId());
         return count($votes) > 0;
     }

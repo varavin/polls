@@ -4,30 +4,19 @@ namespace Polls\Services;
 
 use Polls\Models\User;
 use Polls\Models\Vote;
+use Polls\Models\Answer;
 
 class VotesCRUD extends CRUD
 {
-    public function create(User $user, array $data) : Vote
+    public function create(User $user, Answer $answer, array $data) : Vote
     {
-        if (!isset($data['answerId'])) {
-            $this->setStatus(false, 'Answer ID is missing.');
-            return new Vote();
-        }
         if (!isset($data['name'])) {
             $this->setStatus(false, 'Visitor name is missing.');
             return new Vote();
         }
 
-        // retrieving answer data to validate the answer ID
-        $answersService = new AnswersCRUD($this->pdo());
-        $answer = $answersService->read($data['answerId']);
-        if (!$answer->getId()) {
-            $this->setStatus(false, 'Wrong answer ID.');
-            return new Vote();
-        }
-
         // validating that user has not voted for that poll before
-        if ($user->hasVoted($answer->getPollID(), $this->pdo())) {
+        if ($user->hasVoted($answer->getPollID())) {
             $this->setStatus(false, 'This user has already voted');
             return new Vote();
         }

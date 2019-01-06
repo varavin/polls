@@ -31,15 +31,16 @@ class UsersCRUD extends CRUD
      */
     private function getByUid(string $uid) : User
     {
-        if (!$uid) return new User();
+        $blankUser = new User($this->pdo());
+        if (!$uid) return $blankUser;
 
         $query = $this->pdo()->prepare('SELECT * FROM users WHERE uid = :uid');
         $query->execute([':uid' => $uid]);
         $row = $query->fetch(\PDO::FETCH_ASSOC);
 
-        $user = new User();
+        $user = new User($this->pdo());
         return ($row && $user->fill($row) && $user->validate())
             ? $user
-            : new User();
+            : $blankUser;
     }
 }

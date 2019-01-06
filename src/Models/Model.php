@@ -16,6 +16,11 @@ class Model implements ModelInterface
         $this->pdo = $pdo;
     }
 
+    public function pdo()
+    {
+        return $this->pdo;
+    }
+
     public function fill(array $data)
     {
 
