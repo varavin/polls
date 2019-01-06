@@ -5,5 +5,8 @@
         "psr-4": {
             "Polls\\": "src/"
         }
+    },
+    "require": {
+        "cboden/ratchet": "^0.4.1"
     }
 }

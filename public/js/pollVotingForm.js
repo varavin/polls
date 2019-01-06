@@ -3,6 +3,8 @@ function PollVotingForm(apiRequest)
     this.apiRequest = apiRequest;
     this.buttonVote = document.getElementById('buttonVote');
     this.errorMessage = document.getElementById('errorMessage');
+    this.pollUid = document.getElementById('pollUid').value;
+    this.conn = new WebSocket('ws://localhost:8888');
 
     this.vote = function() {
         var self = this;
@@ -46,12 +48,20 @@ function PollVotingForm(apiRequest)
         var self = this;
         self.apiRequest.send('POST', 'vote', payload, function(resp) {
             if (resp.success) {
+                self.conn.send(JSON.stringify({
+                    command: 'message',
+                    message: 'results for poll ' + self.pollUid + ' updated'
+                }));
                 window.location.reload();
             } else {
                 self.showError(resp.message);
                 return false;
             }
         })
+    };
+
+    this.updateResults = function (data) {
+        console.log(data);
     };
 
     this.showError = function(message) {
@@ -62,6 +72,13 @@ function PollVotingForm(apiRequest)
     this.init = function() {
         var self = this;
         self.buttonVote.addEventListener('click', function() { self.vote(); });
+        self.conn.onopen = function(e) {
+            console.log('Connection established!');
+            self.conn.send(JSON.stringify({command: "subscribe", channel: self.pollUid}));
+        };
+        self.conn.onmessage = function(e) {
+            self.updateResults(JSON.parse(e.data));
+        };
     };
 
     this.init();

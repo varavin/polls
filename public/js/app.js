@@ -7,3 +7,4 @@ document.addEventListener('DOMContentLoaded', function() {
         var pollVotingForm = new PollVotingForm(new APIRequest());
     }
 });
+

@@ -67,6 +67,7 @@ class PollsCRUD extends CRUD
         return $poll;
     }
 
+    //TODO: move into Poll model
     public function getResults(int $pollId) : array
     {
         $answersService = new AnswersCRUD($this->pdo());

@@ -10,6 +10,7 @@
     </h1>
 
     <div class="ex2-question" id="pollVotingForm">
+        <input type="hidden" id="pollUid" value="<?= $poll->getUid() ?>">
         <div class="ex2-question__label">
             Your name:
         </div>
