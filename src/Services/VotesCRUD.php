@@ -13,6 +13,10 @@ class VotesCRUD extends CRUD
             return $this->setStatus(false, 'No "votes" section in the payload.');
         }
 
+        if (!isset($data['name'])) {
+            return $this->setStatus(false, 'Visitor name is missing.');
+        }
+
         // retrieving first answer data to determine the poll ID
         $answersService = new AnswersCRUD($this->pdo());
         $firstAnswer = $answersService->read($data['votes'][0]['answerId']);
@@ -51,13 +55,15 @@ class VotesCRUD extends CRUD
         foreach ($data['votes'] as $voteData) {
             $voteDataFull = $voteData;
             $voteDataFull['userId'] = $user->getId();
+            $voteDataFull['visitorName'] = $data['name'];
             $vote = new Vote();
             if ($vote->fill($voteDataFull) && $vote->validate()) {
-                $sql = 'INSERT INTO votes (userId, answerId, answer) VALUES (:userId, :answerId, :answer)';
+                $sql = 'INSERT INTO votes (userId, answerId, answer, authorName) VALUES (:userId, :answerId, :answer, :visitorName)';
                 $this->pdo()->prepare($sql)->execute([
                     ':userId' => $user->getId(),
                     ':answerId' => $vote->getAnswerId(),
-                    ':answer' => $vote->getAnswer()
+                    ':answer' => $vote->getAnswer(),
+                    ':visitorName' => $vote->getVisitorName()
                 ]);
             }
         }

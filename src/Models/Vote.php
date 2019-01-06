@@ -10,7 +10,8 @@ use Polls\Interfaces\ModelInterface;
  * @property integer $id
  * @property integer $userId
  * @property integer $answerId
- * @property integer $answer
+ * @property string $answer
+ * @property string $visitorName
  */
 class Vote implements ModelInterface
 {
@@ -18,6 +19,7 @@ class Vote implements ModelInterface
     private $userId = null;
     private $answerId = null;
     private $answer = null;
+    private $visitorName = null;
 
     public function getId()
     {
@@ -39,6 +41,11 @@ class Vote implements ModelInterface
         return $this->answer;
     }
 
+    public function getVisitorName()
+    {
+        return $this->visitorName;
+    }
+
     public function fill(array $data = [])
     {
         if (array_key_exists('id', $data)) {
@@ -53,12 +60,15 @@ class Vote implements ModelInterface
         if (array_key_exists('answer', $data)) {
             $this->answer = $data['answer'];
         }
+        if (array_key_exists('visitorName', $data)) {
+            $this->visitorName = $data['visitorName'];
+        }
         return true;
     }
 
     public function validate()
     {
-        return $this->userId && $this->answerId && $this->answer !== null;
+        return $this->userId && $this->answerId && $this->answer !== null && $this->visitorName;
     }
 
     public function jsonSerialize()
@@ -68,6 +78,7 @@ class Vote implements ModelInterface
             'userId' => $this->userId,
             'answerId' => $this->answerId,
             'answer' => $this->answer,
+            'visitorName' => $this->visitorName,
         ];
     }
 }
