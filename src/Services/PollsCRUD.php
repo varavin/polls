@@ -11,10 +11,25 @@ class PollsCRUD extends CRUD
         $poll = new Poll();
         $dataNew = $data;
         $dataNew['uid'] = md5(uniqid());
+        //var_dump($data);exit;
         if (!$poll->fill($dataNew) || !$poll->validate()) {
             $this->setStatus(false, 'Poll data not valid.');
             return new Poll();
         }
+
+        // validating answers presence
+        if (!isset($data['answers']) || !is_array($data['answers'])) {
+            $this->setStatus(false, 'Answers are not specified.');
+            return new Poll();
+        }
+
+        // validating answers uniqueness
+        $texts = array_column($data['answers'], 'text');
+        if (count(array_unique($texts)) !== count($texts)) {
+            $this->setStatus(false, 'Answers must be unique.');
+            return new Poll();
+        }
+
         $sql = 'INSERT INTO polls (uid, question) VALUES (:uid, :question)';
         $params = [
             ':uid' => $poll->getUid(),
@@ -51,7 +66,7 @@ class PollsCRUD extends CRUD
         $updatedAnswers = [];
         foreach ($poll->getAnswers() as $answer) {
             $answersService = new AnswersCRUD($this->pdo());
-            $newAnswer = $answersService->create(['pollID' => $poll->getId(), 'text' => $answer->getText()]);
+            $newAnswer = $answersService->create(['pollId' => $poll->getId(), 'text' => $answer->getText()]);
             if ($newAnswer->getId()) {
                 $updatedAnswers[] = $newAnswer;
             }

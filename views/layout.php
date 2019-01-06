@@ -35,22 +35,22 @@
                 <tr>
                     <th>Question:</th>
                     <th>
-                        <input id="questionText" type="text" value="Where do we go out tonight?" class="input-text" />
+                        <input id="questionInput" type="text" value="Where do we go out tonight?" class="input-text" />
                     </th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
+                <tr class="jsAnswerRow">
                     <th>Answer 1:</th>
-                    <td><input type="text" value="Yes" class="input-text jsAnswerText" /></td>
+                    <td><input type="text" value="Yes" class="input-text jsAnswerInput" /></td>
                 </tr>
-                <tr>
+                <tr class="jsAnswerRow">
                     <th>Answer 2:</th>
-                    <td><input type="text" value="No" class="input-text jsAnswerText" /></td>
+                    <td><input type="text" value="No" class="input-text jsAnswerInput" /></td>
                 </tr>
                 <tr>
                     <td class="poll-table__plus">
-                        <button class="btn btn--plus">
+                        <button class="btn btn--plus" id="addAnswer">
                             +
                         </button>
                     </td>
@@ -62,6 +62,7 @@
             <button class="btn btn--start" id="startPoll">
                 Start
             </button>
+            <div><p id="errorMessage" class="errorMessage"></p></div>
         </div>
     </div>
 </div>

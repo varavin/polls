@@ -9,12 +9,14 @@ class AnswersCRUD extends CRUD
     public function create(array $data) : Answer
     {
         $answer = new Answer();
-        if (!$answer->fill($data) && !$answer->validate($data)) {
+        if (!$answer->fill($data) && !$answer->validate()) {
+            $this->setStatus(false, 'Error while creating answer.');
             return new Answer();
         }
-        $sql = 'INSERT INTO answers (pollID, text) VALUES (:pollID, :text)';
+
+        $sql = 'INSERT INTO answers (pollId, text) VALUES (:pollId, :text)';
         $params = [
-            ':pollID' => $answer->getPollID(),
+            ':pollId' => $answer->getPollId(),
             ':text' => $answer->getText()
         ];
         if (!$this->pdo()->prepare($sql)->execute($params)) {

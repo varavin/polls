@@ -247,6 +247,11 @@ pre {
 .ex2-table__plus {
     text-align: right;
 }
+.errorMessage {
+    color: red;
+    font-size: 18px;
+    font-weight: bold;
+}
 
 @media (max-width: 768px) {
     .form {
