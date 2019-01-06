@@ -3,7 +3,6 @@ namespace Polls;
 use Polls\Services\PollsCRUD;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
-use Polls\App;
 
 class LiveResults implements MessageComponentInterface
 {
@@ -17,7 +16,6 @@ class LiveResults implements MessageComponentInterface
         $this->clients = new \SplObjectStorage;
         $this->subscriptions = [];
         $this->users = [];
-
         $this->app = new App();
     }
 
@@ -31,10 +29,10 @@ class LiveResults implements MessageComponentInterface
     {
         $data = json_decode($msg);
         switch ($data->command) {
-            case "subscribe":
+            case 'subscribe':
                 $this->subscriptions[$conn->resourceId] = $data->channel;
                 break;
-            case "message":
+            case 'message':
                 if (isset($this->subscriptions[$conn->resourceId])) {
                     $target = $this->subscriptions[$conn->resourceId];
                     foreach ($this->subscriptions as $id=>$channel) {
@@ -58,7 +56,7 @@ class LiveResults implements MessageComponentInterface
 
     public function onError(ConnectionInterface $conn, \Exception $e)
     {
-        echo "An error has occurred: {$e->getMessage()}\n";
+        echo 'An error has occurred: {$e->getMessage()}\n';
         $conn->close();
     }
 }

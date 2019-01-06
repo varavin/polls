@@ -5,5 +5,6 @@ $this->config = [
         'database' => 'polls',
         'user' => 'root',
         'password' => '',
-    ]
+    ],
+    'siteRootURL' => 'http://polls.local'
 ];

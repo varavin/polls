@@ -40,6 +40,7 @@ class App
         $action = '';
         $parameters = [];
         $pageTitle = '';
+        $siteRootURL = $this->getConfigVar(['siteRootURL']);
 
         if (count($chunks) === 0) {
             $controller = new SiteController($this);
@@ -71,7 +72,7 @@ class App
             header('Content-Type: application/json');
             echo $content;
         } else {
-            echo $this->renderView('layout', compact('content', 'pageTitle'));
+            echo $this->renderView('layout', compact('content', 'pageTitle', 'siteRootURL'));
         }
         return true;
     }
