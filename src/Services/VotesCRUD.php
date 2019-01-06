@@ -16,7 +16,7 @@ class VotesCRUD extends CRUD
         }
 
         // validating that user has not voted for that poll before
-        if ($user->hasVoted($answer->getPollID())) {
+        if ($user->hasVoted($answer->getPollId())) {
             $this->setStatus(false, 'This user has already voted');
             return new Vote();
         }

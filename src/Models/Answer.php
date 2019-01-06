@@ -15,7 +15,7 @@ class Answer extends Model
     private $pollId = 0;
     private $text = '';
 
-    public function getPollID()
+    public function getPollId()
     {
         return $this->pollId;
     }

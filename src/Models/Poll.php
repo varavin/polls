@@ -52,6 +52,9 @@ class Poll extends Model
 
     public function fill(array $data)
     {
+        if (array_key_exists('id', $data)) {
+            $this->id = $data['id'];
+        }
         if (array_key_exists('uid', $data)) {
             $this->uid = $data['uid'];
         }

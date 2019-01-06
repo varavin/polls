@@ -30,10 +30,13 @@ class App
         $method = $_SERVER['REQUEST_METHOD'] ? $_SERVER['REQUEST_METHOD'] : 'GET';
         $controller = new Controller($this);
         $action = '';
+        $parameters = [];
+        $pageTitle = '';
 
         if (count($chunks) === 0) {
             $controller = new SiteController($this);
             $action = 'index';
+            $pageTitle = 'Create new poll';
         }
 
         if ($chunks[0] === 'api') {
@@ -47,12 +50,19 @@ class App
             $action = isset($APIMap[$method][$chunks[1]]) ? $APIMap[$method][$chunks[1]] : false;
         }
 
+        if ($chunks[0] === 'poll') {
+            $controller = new SiteController($this);
+            $action = 'poll';
+            $parameters = [$chunks[1]];
+            $pageTitle = 'Poll voting and results';
+        }
+
         if (!$action || !method_exists($controller, $action)) {
             header('HTTP/1.0 404 Not Found');
             exit;
         }
 
-        $content = $controller->$action();
+        $content = call_user_func_array([$controller, $action], $parameters);
 
         if ($controller instanceof APIController) {
             header('Content-Type: application/json');
@@ -60,7 +70,7 @@ class App
             return true;
         }
 
-        echo $this->renderView('layout', compact('content'));
+        echo $this->renderView('layout', compact('content', 'pageTitle'));
     }
 
     private function loadConfig()

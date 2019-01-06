@@ -11,7 +11,6 @@ class PollsCRUD extends CRUD
         $poll = new Poll();
         $dataNew = $data;
         $dataNew['uid'] = md5(uniqid());
-        //var_dump($data);exit;
         if (!$poll->fill($dataNew) || !$poll->validate()) {
             $this->setStatus(false, 'Poll data not valid.');
             return new Poll();
@@ -45,10 +44,18 @@ class PollsCRUD extends CRUD
         return $poll;
     }
 
-    public function read(int $id) : Poll
+    public function read(int $id, string $uid = '') : Poll
     {
-        $sql = 'SELECT * FROM polls WHERE id = ' . intval($id);
-        $row = $this->pdo()->query($sql)->fetch(\PDO::FETCH_ASSOC);
+        if ($id) {
+            $sql = 'SELECT * FROM polls WHERE id = :id';
+            $params = [':id' => $id];
+        } else if ($uid) {
+            $sql = 'SELECT * FROM polls WHERE uid = ' . intval($id);
+            $params = [':uid' => $uid];
+        }
+        $query = $this->pdo()->prepare($sql);
+        $query->execute($params);
+        $row = $query->fetch(\PDO::FETCH_ASSOC);
         $poll = new Poll();
         if ( ! ($row && $poll->fill($row) && $poll->validate())) {
             $this->setStatus(false, 'Poll not found.');
@@ -58,6 +65,15 @@ class PollsCRUD extends CRUD
         $answers = $answersService->getByPollId($poll->getId());
         $poll->setAnswers($answers);
         return $poll;
+    }
+
+    public function getResults(int $pollId) : array
+    {
+        $answersService = new AnswersCRUD($this->pdo());
+        $answersIds = array_keys($answersService->getByPollId($pollId));
+        $votesService = new VotesCRUD($this->pdo());
+        $results = $votesService->readMultiple($answersIds);
+        return $results;
     }
 
     private function saveAnswers(Poll $poll) : Poll
