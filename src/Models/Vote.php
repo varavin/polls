@@ -21,6 +21,11 @@ class Vote implements ModelInterface
     private $answer = null;
     private $visitorName = null;
 
+    public function setId(int $id)
+    {
+        $this->id = $id;
+    }
+
     public function getId()
     {
         return $this->id;
@@ -68,7 +73,7 @@ class Vote implements ModelInterface
 
     public function validate()
     {
-        return $this->userId && $this->answerId && $this->answer !== null && $this->visitorName;
+        return $this->userId && $this->answerId && $this->visitorName;
     }
 
     public function jsonSerialize()

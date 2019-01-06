@@ -4,70 +4,81 @@ namespace Polls\Services;
 
 use Polls\Models\User;
 use Polls\Models\Vote;
+use Polls\Models\Poll;
 
 class VotesCRUD extends CRUD
 {
-    public function createMultiple(User $user, array $data) : bool
+    public function create(User $user, array $data) : Vote
     {
-        if (!isset($data['votes']) && !is_array($data['votes'])) {
-            return $this->setStatus(false, 'No "votes" section in the payload.');
+        if (!isset($data['answerId'])) {
+            $this->setStatus(false, 'Answer ID is missing.');
+            return new Vote();
         }
-
         if (!isset($data['name'])) {
-            return $this->setStatus(false, 'Visitor name is missing.');
+            $this->setStatus(false, 'Visitor name is missing.');
+            return new Vote();
         }
 
-        // retrieving first answer data to determine the poll ID
+        // retrieving answer data to validate the answer ID
         $answersService = new AnswersCRUD($this->pdo());
-        $firstAnswer = $answersService->read($data['votes'][0]['answerId']);
-        if (!$firstAnswer->getID()) {
-            return $this->setStatus(false, 'Cannot determine the poll ID.');
+        $answer = $answersService->read($data['answerId']);
+        if (!$answer->getId()) {
+            $this->setStatus(false, 'Wrong answer ID.');
+            return new Vote();
         }
 
-        // validating that all answers belong to the same poll
-        $sql = 'SELECT id FROM answers WHERE pollId = ' . intval($firstAnswer->getPollID());
-        $pollAnswersIds = $this->pdo()->query($sql)->fetchAll(\PDO::FETCH_COLUMN);
-        foreach ($data['votes'] as $voteData) {
-            if (!isset($voteData['answerId']) || !in_array($voteData['answerId'], $pollAnswersIds)) {
-                return $this->setStatus(false, 'All answers must belong to the same poll.');
-            }
-        }
-
-        // validating that all answers are present in the payload
-        $givenAnswersIds = [];
-        foreach ($data['votes'] as $voteData) {
-            $givenAnswersIds[] = strval($voteData['answerId']);
-        }
-        if (!empty(array_diff($pollAnswersIds, $givenAnswersIds))) {
-            return $this->setStatus(false, 'All the poll\'s answers must present in the payload.');
-        }
-
-        // validating that user has not voted for any of the answers before
-        $sql = 'SELECT id FROM votes WHERE userId = :userId AND answerId IN (:answersIds)';
-        $query = $this->pdo()->prepare($sql);
-        $query->execute([':userId' => $user->getId(), ':answersIds' => implode(',', $pollAnswersIds)]);
-
-        if ($query->rowCount()){
-            return $this->setStatus(false, 'This user has already voted.');
+        // validating that user has not voted for that poll before
+        if ($this->userHasVoted($user, $answer->getPollID())) {
+            $this->setStatus(false, 'This user has already voted');
+            return new Vote();
         }
 
         // finally saving the votes data
-        foreach ($data['votes'] as $voteData) {
-            $voteDataFull = $voteData;
-            $voteDataFull['userId'] = $user->getId();
-            $voteDataFull['visitorName'] = $data['name'];
-            $vote = new Vote();
-            if ($vote->fill($voteDataFull) && $vote->validate()) {
-                $sql = 'INSERT INTO votes (userId, answerId, answer, authorName) VALUES (:userId, :answerId, :answer, :visitorName)';
-                $this->pdo()->prepare($sql)->execute([
-                    ':userId' => $user->getId(),
-                    ':answerId' => $vote->getAnswerId(),
-                    ':answer' => $vote->getAnswer(),
-                    ':visitorName' => $vote->getVisitorName()
-                ]);
-            }
+        $voteData = ['userId' => $user->getId(), 'answerId' => $answer->getId(), 'visitorName' => $data['name']];
+        $vote = new Vote();
+        if ($vote->fill($voteData) && $vote->validate()) {
+            $vote = $this->saveVote($user, $vote);
         }
 
-        return true;
+        return $vote;
+    }
+
+    public function read(int $id) : Vote
+    {
+        $sql = 'SELECT * FROM votes WHERE id = ' . intval($id);
+        $row = $this->pdo()->query($sql)->fetch(\PDO::FETCH_ASSOC);
+        $vote = new Vote();
+        if ($row && $vote->fill($row) && $vote->validate()) {
+            return $vote;
+        } else {
+            return new Vote();
+        }
+    }
+
+    private function userHasVoted(User $user, int $pollId) : bool
+    {
+        $answersService = new AnswersCRUD($this->pdo());
+        $answersIds = array_keys($answersService->getByPollId($pollId));
+        $placeholders = array_fill(0, count($answersIds), '?');
+        $sql = 'SELECT * FROM votes WHERE userId = ? AND answerId IN (' . implode(',', $placeholders) . ')';
+        $query = $this->pdo()->prepare($sql);
+        $query->bindParam(1, $user->getId());
+        for ($i = 1; $i <= count($answersIds); $i++) {
+            $query->bindParam($i + 1, $answersIds[$i - 1]);
+        }
+        $query->execute();
+        return $query->rowCount() > 0;
+    }
+
+    private function saveVote(User $user, Vote $vote) : Vote
+    {
+        $sql = 'INSERT INTO votes (userId, answerId, visitorName) VALUES (:userId, :answerId, :visitorName)';
+        $this->pdo()->prepare($sql)->execute([
+            ':userId' => $user->getId(),
+            ':answerId' => $vote->getAnswerId(),
+            ':visitorName' => $vote->getVisitorName()
+        ]);
+        $id = $this->pdo()->lastInsertId();
+        return $this->read($id);
     }
 }

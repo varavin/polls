@@ -21,7 +21,7 @@ class AnswersCRUD extends CRUD
             return new Answer();
         }
         $id = $this->pdo()->lastInsertId();
-        $answer->setID($id);
+        $answer->setId($id);
         return $answer;
     }
 
@@ -35,5 +35,19 @@ class AnswersCRUD extends CRUD
         } else {
             return new Answer();
         }
+    }
+
+    public function getByPollId(int $pollId) : array
+    {
+        $result = [];
+        $sql = 'SELECT * FROM answers WHERE pollId = ' . intval($pollId);
+        $data = $this->pdo()->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
+        foreach ($data as $row) {
+            $answer = new Answer();
+            if ($row && $answer->fill($row) && $answer->validate()) {
+                $result[$answer->getId()] = $answer;
+            }
+        }
+        return $result;
     }
 }

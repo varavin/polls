@@ -27,12 +27,12 @@ class Answer implements ModelInterface
         return $this->text;
     }
 
-    public function getID()
+    public function getId()
     {
         return $this->id;
     }
 
-    public function setID(int $id)
+    public function setId(int $id)
     {
         $this->id = $id;
     }

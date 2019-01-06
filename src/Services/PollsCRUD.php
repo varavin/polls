@@ -16,7 +16,7 @@ class PollsCRUD extends CRUD
         }
         $sql = 'INSERT INTO polls (uid, authorName, question) VALUES (:uid, :authorName, :question)';
         $params = [
-            ':uid' => $poll->getUID(),
+            ':uid' => $poll->getUid(),
             ':authorName' => $poll->getAuthorName(),
             ':question' => $poll->getQuestion()
         ];
@@ -24,8 +24,22 @@ class PollsCRUD extends CRUD
             return new Poll();
         };
         $id = $this->pdo()->lastInsertId();
-        $poll->setID($id);
+        $poll->setId($id);
         $poll = $this->saveAnswers($poll);
+        return $poll;
+    }
+
+    public function read(int $id) : Poll
+    {
+        $sql = 'SELECT * FROM polls WHERE id = ' . intval($id);
+        $row = $this->pdo()->query($sql)->fetch(\PDO::FETCH_ASSOC);
+        $poll = new Poll();
+        if ( ! ($row && $poll->fill($row) && $poll->validate())) {
+            return new Poll();
+        }
+        $answersService = new AnswersCRUD($this->pdo());
+        $answers = $answersService->getByPollId($poll->getId());
+        $poll->setAnswers($answers);
         return $poll;
     }
 
@@ -35,8 +49,8 @@ class PollsCRUD extends CRUD
         $updatedAnswers = [];
         foreach ($poll->getAnswers() as $answer) {
             $answersService = new AnswersCRUD($this->pdo());
-            $newAnswer = $answersService->create(['pollID' => $poll->getID(), 'text' => $answer->getText()]);
-            if ($newAnswer->getID()) {
+            $newAnswer = $answersService->create(['pollID' => $poll->getId(), 'text' => $answer->getText()]);
+            if ($newAnswer->getId()) {
                 $updatedAnswers[] = $newAnswer;
             }
         }

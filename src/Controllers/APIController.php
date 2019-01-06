@@ -43,7 +43,7 @@ class APIController extends Controller
         ]);
     }
 
-    public function createVotes()
+    public function createVote()
     {
         $payload = $this->app->payload();
 
@@ -60,7 +60,7 @@ class APIController extends Controller
         };
 
         $votesService = new VotesCRUD($this->app->pdo());
-        $votesService->createMultiple($user, $this->app->payload());
+        $votesService->create($user, $this->app->payload());
         return $this->app->renderView('json', [
             'data' => [],
             'success' => $votesService->getSuccess(),

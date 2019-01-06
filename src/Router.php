@@ -13,7 +13,7 @@ class Router
         'POST' => [
             'poll' => 'createPoll',
             'user' => 'createUser',
-            'votes' => 'createVotes'
+            'vote' => 'createVote'
         ]
     ];
 

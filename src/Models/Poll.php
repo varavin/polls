@@ -30,12 +30,12 @@ class Poll implements ModelInterface
         return $this->question;
     }
 
-    public function getUID()
+    public function getUid()
     {
         return $this->uid;
     }
 
-    public function getID()
+    public function getId()
     {
         return $this->id;
     }
@@ -53,7 +53,7 @@ class Poll implements ModelInterface
         $this->answers = $answers;
     }
 
-    public function setID(int $id)
+    public function setId(int $id)
     {
         $this->id = $id;
     }
