@@ -9,6 +9,9 @@
 <head>
     <meta charset="utf-8"/>
     <script src="/js/functions.js"></script>
+    <script src="/js/apiRequest.js"></script>
+    <script src="/js/pollCreationForm.js"></script>
+    <script src="/js/pollVotingForm.js"></script>
     <script src="/js/app.js"></script>
     <link href="/css/style.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Roboto+Condensed:300,400,400i,700" media="all">

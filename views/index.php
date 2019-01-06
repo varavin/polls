@@ -1,4 +1,4 @@
-<div class="poll">
+<div class="poll" id="pollCreationForm">
     <table class="poll-table">
         <thead>
         <tr>
