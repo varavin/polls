@@ -8,10 +8,11 @@ class Router
 
     private $apiMap = [
         'GET' => [
-            ''
+            'user' => 'readUser'
         ],
         'POST' => [
-            'poll' => 'createPoll'
+            'poll' => 'createPoll',
+            'user' => 'createUser'
         ]
     ];
 
@@ -28,12 +29,6 @@ class Router
     public function getAPIMap()
     {
         return $this->apiMap;
-    }
-
-    public function show404()
-    {
-        header('HTTP/1.0 404 Not Found');
-        exit;
     }
 
     private function loadChunks()

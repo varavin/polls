@@ -1,7 +1,7 @@
 <?php
 $this->config = [
     'db' => [
-        'host' => 'localhost',
+        'host' => '127.0.0.1',
         'database' => 'polls',
         'user' => 'root',
         'password' => '',

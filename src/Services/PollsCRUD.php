@@ -10,7 +10,7 @@ class PollsCRUD extends CRUD
     {
         $poll = new Poll();
         $dataNew = $data;
-        $dataNew['uid'] = uniqid();
+        $dataNew['uid'] = md5(uniqid());
         if (!$poll->fill($dataNew) || !$poll->validate()) {
             return new Poll();
         }

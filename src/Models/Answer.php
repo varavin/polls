@@ -7,12 +7,12 @@ use Polls\Interfaces\ModelInterface;
 class Answer implements ModelInterface
 {
     private $id = 0;
-    private $pollID = 0;
+    private $pollId = 0;
     private $text = '';
 
     public function getPollID()
     {
-        return $this->pollID;
+        return $this->pollId;
     }
 
     public function getText()
@@ -35,12 +35,21 @@ class Answer implements ModelInterface
             $this->text = $data['text'];
         }
         if (array_key_exists('pollID', $data)) {
-            $this->pollID = $data['pollID'];
+            $this->pollId = $data['pollID'];
         }
         return true;
     }
 
     public function validate() {
-        return $this->text !== '' && intval($this->pollID) > 0;
+        return $this->text !== '' && intval($this->pollId) > 0;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'pollId' => $this->pollId,
+            'text' => $this->text
+        ];
     }
 }

@@ -73,6 +73,17 @@ class Poll implements ModelInterface
 
     public function validate()
     {
-        return strlen($this->uid) === 13 && $this->authorName !== '' && intval($this->id) >= 0;
+        return strlen($this->uid) === 32 && $this->authorName !== '' && intval($this->id) >= 0;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'uid' => $this->uid,
+            'authorName' => $this->authorName,
+            'question' => $this->question,
+            'answers' => $this->answers
+        ];
     }
 }
