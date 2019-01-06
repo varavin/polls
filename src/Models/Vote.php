@@ -2,8 +2,6 @@
 
 namespace Polls\Models;
 
-use Polls\Interfaces\ModelInterface;
-
 /**
  * Class Vote
  * @package Polls\Models
@@ -13,12 +11,11 @@ use Polls\Interfaces\ModelInterface;
  * @property string $answer
  * @property string $visitorName
  */
-class Vote implements ModelInterface
+class Vote extends Model
 {
     private $id = null;
     private $userId = null;
     private $answerId = null;
-    private $answer = null;
     private $visitorName = null;
 
     public function setId(int $id)
@@ -41,11 +38,6 @@ class Vote implements ModelInterface
         return $this->answerId;
     }
 
-    public function getAnswer()
-    {
-        return $this->answer;
-    }
-
     public function getVisitorName()
     {
         return $this->visitorName;
@@ -61,9 +53,6 @@ class Vote implements ModelInterface
         }
         if (array_key_exists('answerId', $data)) {
             $this->answerId = $data['answerId'];
-        }
-        if (array_key_exists('answer', $data)) {
-            $this->answer = $data['answer'];
         }
         if (array_key_exists('visitorName', $data)) {
             $this->visitorName = $data['visitorName'];
@@ -82,7 +71,6 @@ class Vote implements ModelInterface
             'id' => $this->id,
             'userId' => $this->userId,
             'answerId' => $this->answerId,
-            'answer' => $this->answer,
             'visitorName' => $this->visitorName,
         ];
     }

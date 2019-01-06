@@ -4,7 +4,6 @@ namespace Polls\Services;
 
 use Polls\Models\User;
 use Polls\Models\Vote;
-use Polls\Models\Poll;
 
 class VotesCRUD extends CRUD
 {
@@ -28,7 +27,7 @@ class VotesCRUD extends CRUD
         }
 
         // validating that user has not voted for that poll before
-        if ($this->userHasVoted($user, $answer->getPollID())) {
+        if ($user->hasVoted($answer->getPollID(), $this->pdo())) {
             $this->setStatus(false, 'This user has already voted');
             return new Vote();
         }
@@ -43,6 +42,10 @@ class VotesCRUD extends CRUD
         return $vote;
     }
 
+    /**
+     * @param int $id
+     * @return Vote
+     */
     public function read(int $id) : Vote
     {
         $sql = 'SELECT * FROM votes WHERE id = ' . intval($id);
@@ -55,19 +58,35 @@ class VotesCRUD extends CRUD
         }
     }
 
-    private function userHasVoted(User $user, int $pollId) : bool
+    /**
+     * @param array $ids
+     * @param int|null $userId
+     * @return Vote[]
+     */
+    public function readMultiple(array $ids, int $userId = null) : array
     {
-        $answersService = new AnswersCRUD($this->pdo());
-        $answersIds = array_keys($answersService->getByPollId($pollId));
-        $placeholders = array_fill(0, count($answersIds), '?');
-        $sql = 'SELECT * FROM votes WHERE userId = ? AND answerId IN (' . implode(',', $placeholders) . ')';
+        $placeholders = array_fill(0, count($ids), '?');
+        $sql = 'SELECT * FROM votes WHERE answerId IN (' . implode(',', $placeholders) . ') ';
+        if ($userId) {
+            $sql .= ' AND userId = ?';
+        }
         $query = $this->pdo()->prepare($sql);
-        $query->bindParam(1, $user->getId());
-        for ($i = 1; $i <= count($answersIds); $i++) {
-            $query->bindParam($i + 1, $answersIds[$i - 1]);
+        for ($i = 1; $i <= count($ids); $i++) {
+            $query->bindParam($i, $ids[$i - 1]);
+        }
+        if ($userId) {
+            $query->bindParam(count($ids) + 1, $userId);
         }
         $query->execute();
-        return $query->rowCount() > 0;
+        $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
+        $result = [];
+        foreach ($rows as $row) {
+            $vote = new Vote();
+            if ($vote->fill($row) && $vote->validate()) {
+                $result[] = $vote;
+            }
+        }
+        return $result;
     }
 
     private function saveVote(User $user, Vote $vote) : Vote

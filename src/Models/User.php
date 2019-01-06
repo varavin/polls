@@ -2,7 +2,8 @@
 
 namespace Polls\Models;
 
-use Polls\Interfaces\ModelInterface;
+use Polls\Services\AnswersCRUD;
+use Polls\Services\VotesCRUD;
 
 /**
  * Class User
@@ -10,7 +11,7 @@ use Polls\Interfaces\ModelInterface;
  * @property integer $id
  * @property string $uid
  */
-class User implements ModelInterface
+class User extends Model
 {
     private $id = 0;
     private $uid = '';
@@ -42,5 +43,15 @@ class User implements ModelInterface
             'id' => $this->id,
             'uid' => $this->uid,
         ];
+    }
+
+    //TODO: have to pass PDO instance some other way
+    public function hasVoted(int $pollId, \PDO $pdo) : bool
+    {
+        $answersService = new AnswersCRUD($pdo);
+        $answersIds = array_keys($answersService->getByPollId($pollId));
+        $votesService = new VotesCRUD($pdo);
+        $votes = $votesService->readMultiple($answersIds, $this->getId());
+        return count($votes) > 0;
     }
 }

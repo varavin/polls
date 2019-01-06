@@ -1,7 +1,6 @@
 <?php
 
 namespace Polls\Models;
-use Polls\Interfaces\ModelInterface;
 
 /**
  * Class Poll
@@ -12,7 +11,7 @@ use Polls\Interfaces\ModelInterface;
  * @property string $question
  * @property Answer[] $answers
  */
-class Poll implements ModelInterface
+class Poll extends Model
 {
     private $id = 0;
     private $uid = '';

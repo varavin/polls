@@ -2,8 +2,6 @@
 
 namespace Polls\Models;
 
-use Polls\Interfaces\ModelInterface;
-
 /**
  * Class Answer
  * @package Polls\Models
@@ -11,7 +9,7 @@ use Polls\Interfaces\ModelInterface;
  * property integer $pollId
  * property string $text
  */
-class Answer implements ModelInterface
+class Answer extends Model
 {
     private $id = 0;
     private $pollId = 0;
