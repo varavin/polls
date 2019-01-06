@@ -31,11 +31,14 @@ class Answer implements ModelInterface
     }
 
     public function fill(array $data) {
+        if (array_key_exists('id', $data)) {
+            $this->id = $data['id'];
+        }
         if (array_key_exists('text', $data)) {
             $this->text = $data['text'];
         }
-        if (array_key_exists('pollID', $data)) {
-            $this->pollId = $data['pollID'];
+        if (array_key_exists('pollId', $data)) {
+            $this->pollId = $data['pollId'];
         }
         return true;
     }

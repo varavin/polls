@@ -24,4 +24,16 @@ class AnswersCRUD extends CRUD
         $answer->setID($id);
         return $answer;
     }
+
+    public function read(int $id) : Answer
+    {
+        $sql = 'SELECT * FROM answers WHERE id = ' . intval($id);
+        $row = $this->pdo()->query($sql)->fetch(\PDO::FETCH_ASSOC);
+        $answer = new Answer();
+        if ($row && $answer->fill($row) && $answer->validate()) {
+            return $answer;
+        } else {
+            return new Answer();
+        }
+    }
 }

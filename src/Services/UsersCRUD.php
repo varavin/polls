@@ -6,6 +6,9 @@ use Polls\Models\User;
 
 class UsersCRUD extends CRUD
 {
+    /**
+     * @return User
+     */
     public function create() : User
     {
         $uid = md5(uniqid());
@@ -13,13 +16,20 @@ class UsersCRUD extends CRUD
         return $this->getByUid($uid);
     }
 
-    public function read(array $data) : User
+    /**
+     * @param string $uid
+     * @return User
+     */
+    public function read(string $uid) : User
     {
-        $uid = isset($data[0]) ? $data[0] : false;
         return $this->getByUid($uid);
     }
 
-    private function getByUid($uid) : User
+    /**
+     * @param string $uid
+     * @return User
+     */
+    private function getByUid(string $uid) : User
     {
         if (!$uid) return new User();
 

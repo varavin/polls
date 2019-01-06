@@ -9,6 +9,11 @@ class User implements ModelInterface
     private $id = 0;
     private $uid = '';
 
+    public function getId()
+    {
+        return $this->id;
+    }
+
     public function fill(array $data = [])
     {
         if (array_key_exists('id', $data)) {
