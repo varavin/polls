@@ -2,6 +2,8 @@
 <html>
 <head>
     <meta charset="utf-8"/>
+    <script src="/js/functions.js"></script>
+    <script src="/js/app.js"></script>
     <link href="/css/style.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Roboto+Condensed:300,400,400i,700" media="all">
     <title>XIAG test task</title>
@@ -33,22 +35,18 @@
                 <tr>
                     <th>Question:</th>
                     <th>
-                        <input type="text" value="Where do we go out tonight?" class="input-text" />
+                        <input id="questionText" type="text" value="Where do we go out tonight?" class="input-text" />
                     </th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <th>Answer 1:</th>
-                    <td>
-                        <input type="text" value="Yes" class="input-text" />
-                    </td>
+                    <td><input type="text" value="Yes" class="input-text jsAnswerText" /></td>
                 </tr>
                 <tr>
                     <th>Answer 2:</th>
-                    <td>
-                        <input type="text" value="No" class="input-text" />
-                    </td>
+                    <td><input type="text" value="No" class="input-text jsAnswerText" /></td>
                 </tr>
                 <tr>
                     <td class="poll-table__plus">
@@ -61,7 +59,7 @@
                 </tbody>
             </table>
 
-            <button class="btn btn--start">
+            <button class="btn btn--start" id="startPoll">
                 Start
             </button>
         </div>

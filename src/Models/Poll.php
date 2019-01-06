@@ -7,7 +7,6 @@ namespace Polls\Models;
  * @package Polls\Models
  * @property integer $id
  * @property string $uid
- * @property string $authorName
  * @property string $question
  * @property Answer[] $answers
  */
@@ -15,14 +14,8 @@ class Poll extends Model
 {
     private $id = 0;
     private $uid = '';
-    private $authorName = '';
     private $question = '';
     private $answers = [];
-
-    public function getAuthorName()
-    {
-        return $this->authorName;
-    }
 
     public function getQuestion()
     {
@@ -62,9 +55,6 @@ class Poll extends Model
         if (array_key_exists('uid', $data)) {
             $this->uid = $data['uid'];
         }
-        if (array_key_exists('authorName', $data)) {
-            $this->authorName = $data['authorName'];
-        }
         if (array_key_exists('question', $data)) {
             $this->question = $data['question'];
         }
@@ -81,7 +71,7 @@ class Poll extends Model
 
     public function validate()
     {
-        return strlen($this->uid) === 32 && $this->authorName !== '' && intval($this->id) >= 0;
+        return strlen($this->uid) === 32 && intval($this->id) >= 0;
     }
 
     public function jsonSerialize()
@@ -89,7 +79,6 @@ class Poll extends Model
         return [
             'id' => $this->id,
             'uid' => $this->uid,
-            'authorName' => $this->authorName,
             'question' => $this->question,
             'answers' => $this->answers
         ];

@@ -15,10 +15,9 @@ class PollsCRUD extends CRUD
             $this->setStatus(false, 'Poll data not valid.');
             return new Poll();
         }
-        $sql = 'INSERT INTO polls (uid, authorName, question) VALUES (:uid, :authorName, :question)';
+        $sql = 'INSERT INTO polls (uid, question) VALUES (:uid, :question)';
         $params = [
             ':uid' => $poll->getUid(),
-            ':authorName' => $poll->getAuthorName(),
             ':question' => $poll->getQuestion()
         ];
         if (!$this->pdo()->prepare($sql)->execute($params)) {
