@@ -50,7 +50,7 @@ class PollsCRUD extends CRUD
             $sql = 'SELECT * FROM polls WHERE id = :id';
             $params = [':id' => $id];
         } else if ($uid) {
-            $sql = 'SELECT * FROM polls WHERE uid = ' . intval($id);
+            $sql = 'SELECT * FROM polls WHERE uid = :uid';
             $params = [':uid' => $uid];
         }
         $query = $this->pdo()->prepare($sql);

@@ -31,7 +31,7 @@ function PollCreationForm(apiRequest)
         var self = this;
         var node = document.createElement('tr');
         node.className = 'jsAnswerRow';
-        node.innerHTML = '<th>Answer ' + (self.answersRows.length + 1) + ':</th><td><input type="text" value="No" class="input-text jsAnswerText" /></td>';
+        node.innerHTML = '<th>Answer ' + (self.answersRows.length + 1) + ':</th><td><input type="text" value="No" class="input-text jsAnswerInput" /></td>';
         var lastRow = self.answersRows.item(self.answersRows.length - 1);
         lastRow.parentNode.insertBefore(node, lastRow.nextSibling);
     };
