@@ -1,6 +1,7 @@
 <?php
 /**
- * @var object $object - object to be converted to JSON
+ * @var boolean $success - success flag
+ * @var string $message - status message
+ * @var object $data - object to be converted to JSON
  */
-?>
-<?= json_encode(compact('success', 'message', 'data')) ?>
+echo json_encode(compact('success', 'message', 'data'));
