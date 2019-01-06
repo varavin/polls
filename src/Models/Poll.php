@@ -3,6 +3,15 @@
 namespace Polls\Models;
 use Polls\Interfaces\ModelInterface;
 
+/**
+ * Class Poll
+ * @package Polls\Models
+ * @property integer $id
+ * @property string $uid
+ * @property string $authorName
+ * @property string $question
+ * @property Answer[] $answers
+ */
 class Poll implements ModelInterface
 {
     private $id = 0;

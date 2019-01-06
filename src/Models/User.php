@@ -4,6 +4,12 @@ namespace Polls\Models;
 
 use Polls\Interfaces\ModelInterface;
 
+/**
+ * Class User
+ * @package Polls\Models
+ * @property integer $id
+ * @property string $uid
+ */
 class User implements ModelInterface
 {
     private $id = 0;

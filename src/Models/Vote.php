@@ -4,6 +4,14 @@ namespace Polls\Models;
 
 use Polls\Interfaces\ModelInterface;
 
+/**
+ * Class Vote
+ * @package Polls\Models
+ * @property integer $id
+ * @property integer $userId
+ * @property integer $answerId
+ * @property integer $answer
+ */
 class Vote implements ModelInterface
 {
     private $id = null;

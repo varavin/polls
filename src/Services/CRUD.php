@@ -2,6 +2,13 @@
 
 namespace Polls\Services;
 
+/**
+ * Class CRUD
+ * @package Polls\Services
+ * @property \PDO $pdo
+ * @property boolean $success
+ * @property string $message
+ */
 class CRUD
 {
     private $pdo = null;
@@ -13,9 +20,6 @@ class CRUD
         $this->pdo = $pdo;
     }
 
-    /**
-     * return \PDO
-     */
     public function pdo()
     {
         return $this->pdo;
