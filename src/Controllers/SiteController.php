@@ -15,7 +15,7 @@ class SiteController extends Controller
     {
         $pollsService = new PollsCRUD($this->app->pdo());
         $poll = $pollsService->read(0, $uid);
-        $results = $pollsService->getResults($poll->getId());
+        $results = $poll->getResults();
         return $this->app->renderView('poll', compact('poll', 'results'));
     }
 }

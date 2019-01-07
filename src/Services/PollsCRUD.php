@@ -8,7 +8,7 @@ class PollsCRUD extends CRUD
 {
     public function create(array $data) : Poll
     {
-        $poll = new Poll();
+        $poll = new Poll($this->pdo());
         $dataNew = $data;
         $dataNew['uid'] = md5(uniqid());
         if (!$poll->fill($dataNew) || !$poll->validate()) {
@@ -56,7 +56,7 @@ class PollsCRUD extends CRUD
         $query = $this->pdo()->prepare($sql);
         $query->execute($params);
         $row = $query->fetch(\PDO::FETCH_ASSOC);
-        $poll = new Poll();
+        $poll = new Poll($this->pdo());
         if ( ! ($row && $poll->fill($row) && $poll->validate())) {
             $this->setStatus(false, 'Poll not found.');
             return new Poll();
@@ -65,16 +65,6 @@ class PollsCRUD extends CRUD
         $answers = $answersService->getByPollId($poll->getId());
         $poll->setAnswers($answers);
         return $poll;
-    }
-
-    //TODO: move into Poll model
-    public function getResults(int $pollId) : array
-    {
-        $answersService = new AnswersCRUD($this->pdo());
-        $answersIds = array_keys($answersService->getByPollId($pollId));
-        $votesService = new VotesCRUD($this->pdo());
-        $results = $votesService->readMultiple($answersIds);
-        return $results;
     }
 
     private function saveAnswers(Poll $poll) : Poll

@@ -2,6 +2,9 @@
 
 namespace Polls\Models;
 
+use Polls\Services\AnswersCRUD;
+use Polls\Services\VotesCRUD;
+
 /**
  * Class Poll
  * @package Polls\Models
@@ -85,5 +88,13 @@ class Poll extends Model
             'question' => $this->question,
             'answers' => $this->answers
         ];
+    }
+
+    public function getResults() : array
+    {
+        $answersIds = array_keys($this->getAnswers());
+        $votesService = new VotesCRUD($this->pdo());
+        $results = $votesService->readMultiple($answersIds);
+        return $results;
     }
 }

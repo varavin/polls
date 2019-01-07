@@ -39,7 +39,7 @@ class LiveResults implements MessageComponentInterface
                         if ($channel == $target && $id != $conn->resourceId) {
                             $pollsService = new PollsCRUD($this->app->pdo());
                             $poll = $pollsService->read(0, $channel);
-                            $results = $pollsService->getResults($poll->getId());
+                            $results = $poll->getResults();
                             $this->users[$id]->send(json_encode($results));
                         }
                     }
