@@ -1,10 +1,10 @@
-###Why's that for?
+### Why's that for?
 
 This is a sample polling website/webapp implemented as a test task. 
 
 One of the main requirements was to avoid using any PHP or JS frameworks. Everything is made from scratch on plain PHP and vanilla JS. The only exception is the Ratchet websockets library.    
 
-###What does it do? 
+### What does it do? 
   
 * On the main page user can create poll with arbitrary number of options.
 
