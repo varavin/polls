@@ -2,19 +2,35 @@
 
 namespace Polls\Controllers;
 
-use Polls\App;
+use Polls\View;
 
 /**
  * Class Controller
  * @package Polls\Controllers
- * @property App $app
+ * @property View $view
+ * @property \PDO $pdo
+ * @property array $appConfig
  */
 class Controller
 {
-    public $app = null;
+    private $pdo = null;
+    private $view = null;
+    public $appConfig = [];
 
-    public function __construct(App $app)
+    public function __construct(\PDO $pdo, array $config = [])
     {
-        $this->app = $app;
+        $this->view = new View();
+        $this->pdo = $pdo;
+        $this->appConfig = $config;
+    }
+
+    public function pdo()
+    {
+        return $this->pdo;
+    }
+
+    public function view()
+    {
+        return $this->view;
     }
 }

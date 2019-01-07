@@ -1,6 +1,7 @@
 <?php
 /**
- * @var \Polls\App $this
+ * @var \Polls\View $this
+ * @var string $apiURL
 */
 
 $this->addJsComponent("PollCreationForm", "
@@ -8,7 +9,7 @@ $this->addJsComponent("PollCreationForm", "
     if (elem = document.getElementsByClassName('jsComponentPollCreationForm')[0]) {
         jsComponentPollCreationForm = new PollCreationForm(
             elem, 
-            new APIRequest('" . $this->getConfigVar(['siteRootURL']). "/api/')
+            new APIRequest('" . $apiURL . "')
         );
     }
 ");

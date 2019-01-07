@@ -1,8 +1,10 @@
 <?php
 /**
- * @var \Polls\App $this
+ * @var \Polls\View $this
  * @var \Polls\Models\Poll $poll
  * @var \Polls\Models\Vote[] $results
+ * @var string $websocketString
+ * @var string $apiURL
  */
 
 $this->addJsComponent("PollVotingForm", "
@@ -10,8 +12,8 @@ $this->addJsComponent("PollVotingForm", "
     if (elem = document.getElementsByClassName('jsComponentPollVotingForm')[0]) {
         jsComponentPollVotingForm = new PollVotingForm(
             elem, 
-            new APIRequest('" . $this->getConfigVar(['siteRootURL']). "/api/'),
-            'ws://" . $this->getConfigVar(['websocket', 'host']) . ':' . $this->getConfigVar(['websocket', 'port']) . "',
+            new APIRequest('" . $apiURL . "'),
+            '" . $websocketString . "',
             '" . json_encode(array_keys($poll->getAnswers())) . "',
             '" . json_encode($poll->getResults()) . "'
         );

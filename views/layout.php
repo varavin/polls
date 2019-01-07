@@ -3,7 +3,7 @@
  * @var string $content
  * @var string $pageTitle
  * @var string $siteRootURL
- * @var \Polls\App $this
+ * @var \Polls\View $this
  */
 
 $this->addJsComponent("APIRequest", "");

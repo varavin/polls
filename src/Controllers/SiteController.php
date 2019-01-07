@@ -8,14 +8,17 @@ class SiteController extends Controller
 {
     public function index()
     {
-        return $this->app->renderView('index');
+        $apiURL = $this->appConfig['siteRootURL'] . '/api/';
+        return $this->view()->render('index', compact('apiURL'));
     }
 
     public function poll(string $uid)
     {
-        $pollsService = new PollsCRUD($this->app->pdo());
+        $pollsService = new PollsCRUD($this->pdo());
         $poll = $pollsService->read(0, $uid);
         $results = $poll->getResults();
-        return $this->app->renderView('poll', compact('poll', 'results'));
+        $websocketString = 'ws://' . $this->appConfig['websocket']['host'] . ':' . $this->appConfig['websocket']['port'];
+        $apiURL = $this->appConfig['siteRootURL'] . '/api/';
+        return $this->view()->render('poll', compact('poll', 'results', 'websocketString', 'apiURL'));
     }
 }

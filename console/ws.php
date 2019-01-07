@@ -14,7 +14,7 @@ $server = IoServer::factory(
             new LiveResults()
         )
     ),
-    $app->getConfigVar(['websocket', 'port'])
+    $app->config['websocket']['port']
 );
 
 $server->run();

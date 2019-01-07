@@ -7,13 +7,9 @@ use Polls\Controllers\SiteController;
 
 class App
 {
-    private $config = [];
+    public $config = [];
     private $pdo = null;
-    private $payload = [];
-    private $jsComponents = [];
 
-    const VIEWS_DIR = __DIR__ . '/../views/';
-    const JS_COMPONENTS_DIR = __DIR__ .'/../public/js/components/';
     const API_MAP = [
         'GET' => [
             'user' => 'readUser'
@@ -28,10 +24,6 @@ class App
     public function __construct()
     {
         $this->loadConfig();
-        $host = 'mysql:host=' . $this->getConfigVar(['db', 'host']) . ';dbname=' . $this->getConfigVar(['db', 'database']);
-        $user = $this->getConfigVar(['db', 'user']);
-        $pass = $this->getConfigVar(['db', 'password']);
-        $this->pdo = new \PDO($host, $user, $pass);
     }
 
     public function run()
@@ -42,22 +34,23 @@ class App
         $action = '';
         $parameters = [];
         $pageTitle = '';
-        $siteRootURL = $this->getConfigVar(['siteRootURL']);
+        $siteRootURL = $this->config['siteRootURL'];
 
         if (count($chunks) === 0) {
-            $controller = new SiteController($this);
+            $controller = new SiteController($this->pdo(), $this->config);
             $action = 'index';
             $pageTitle = 'Create new poll';
         }
 
         if ($chunks[0] === 'api') {
-            $this->payload = ($method === 'POST')
+            $payload = ($method === 'POST')
                 ? json_decode(file_get_contents('php://input'), true)
-                : $this->payload = array_slice($chunks, 2);
-            $controller = new APIController($this);
+                : array_slice($chunks, 2);
+            $controller = new APIController($this->pdo());
             $action = isset(self::API_MAP[$method][$chunks[1]]) ? self::API_MAP[$method][$chunks[1]] : false;
+            $parameters = [$payload];
         } else if ($chunks[0] === 'poll') {
-            $controller = new SiteController($this);
+            $controller = new SiteController($this->pdo(), $this->config);
             $action = 'poll';
             $parameters = [$chunks[1]];
             $pageTitle = 'Poll voting and results';
@@ -74,44 +67,20 @@ class App
             header('Content-Type: application/json');
             echo $content;
         } else {
-            echo $this->renderView('layout', compact('content', 'pageTitle', 'siteRootURL'));
+            echo $controller->view()->render('layout', compact('content', 'pageTitle', 'siteRootURL'));
         }
         return true;
     }
 
     public function pdo()
     {
+        if (!$this->pdo instanceof \PDO) {
+            $host = 'mysql:host=' . $this->config['db']['host'] . ';dbname=' . $this->config['db']['database'];
+            $user = $this->config['db']['user'];
+            $pass = $this->config['db']['password'];
+            $this->pdo = new \PDO($host, $user, $pass);
+        }
         return $this->pdo;
-    }
-
-    public function payload()
-    {
-        return $this->payload;
-    }
-
-    public function addJsComponent($name, $initCode)
-    {
-        if (!in_array($name, $this->jsComponents) && is_file(self::JS_COMPONENTS_DIR . $name . '.js')) {
-            $this->jsComponents[] = compact('name', 'initCode');
-        }
-    }
-
-    public function getJsComponents()
-    {
-        return $this->jsComponents;
-    }
-
-    public function renderView($view, $variables = array())
-    {
-        $viewFile = self::VIEWS_DIR . $view . '.php';
-        $output = null;
-        if(file_exists($viewFile)){
-            extract($variables);
-            ob_start();
-            require_once($viewFile);
-            $output = ob_get_clean();
-        }
-        return $output;
     }
 
     private function loadConfig()
@@ -123,21 +92,6 @@ class App
             $env = $_SERVER['APP_ENV'];
         }
         require(__DIR__ . '/../config/config.' . $env . '.php');
-    }
-
-    public function getConfigVar($var = null)
-    {
-        $path = is_array($var) ? $var : [$var];
-        $arr = $this->config;
-        foreach ($path as $key) {
-            if (array_key_exists($key, $arr)) {
-                $arr = $arr[$key];
-            } else {
-                $arr = false;
-                break;
-            }
-        }
-        return $arr;
     }
 
     private function getPathChunks() : array
