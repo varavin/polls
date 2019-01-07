@@ -11,18 +11,20 @@ $this->addJsComponent("PollVotingForm", "
         jsComponentPollVotingForm = new PollVotingForm(
             elem, 
             new APIRequest('" . $this->getConfigVar(['siteRootURL']). "/api/'),
-            'ws://" . $this->getConfigVar(['websocket', 'host']) . ':' . $this->getConfigVar(['websocket', 'port']) . "'
+            'ws://" . $this->getConfigVar(['websocket', 'host']) . ':' . $this->getConfigVar(['websocket', 'port']) . "',
+            '" . json_encode(array_keys($poll->getAnswers())) . "',
+            '" . json_encode($poll->getResults()) . "'
         );
     }
 ");
 
 ?>
-<div class="poll">
+<div class="jsComponentPollVotingForm poll">
     <h1>
         <?= $poll->getQuestion() ?>
     </h1>
 
-    <div class="jsComponentPollVotingForm ex2-question">
+    <div class="ex2-question">
         <input type="hidden" class="jsPollUid" value="<?= $poll->getUid() ?>">
         <div class="ex2-question__label">
             Your name:
@@ -57,18 +59,7 @@ $this->addJsComponent("PollVotingForm", "
         </tr>
         </thead>
         <tbody class="jsResults">
-        <?php foreach ($results as $result): ?>
-            <tr>
-                <td><?= $result->getVisitorName() ?></td>
-                <?php foreach ($poll->getAnswers() as $answer): ?>
-                    <?php if ($answer->getId() === $result->getAnswerId()): ?>
-                        <td>x</td>
-                    <?php else: ?>
-                        <td></td>
-                    <?php endif ?>
-                <?php endforeach ?>
-            </tr>
-        <?php endforeach ?>
+            <?php // results are rendered in the PollVotingForm JS component ?>
         </tbody>
     </table>
 </div>

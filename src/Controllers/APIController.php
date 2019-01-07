@@ -71,8 +71,12 @@ class APIController extends Controller
 
         $votesService = new VotesCRUD($this->app->pdo());
         $votesService->create($user, $answer, $payload);
+
+        $pollsService = new PollsCRUD($this->app->pdo());
+        $poll = $pollsService->read($answer->getPollId());
+
         return $this->app->renderView('json', [
-            'data' => [],
+            'data' => $poll->getResults(),
             'success' => $votesService->getSuccess(),
             'message' => $votesService->getMessage()
         ]);

@@ -1,48 +1,53 @@
-function PollVotingForm(wrapper, apiRequest, webSocketURL)
+function PollVotingForm(wrapper, apiRequest, webSocketURL, answersIds, results)
 {
     this.wrapper = wrapper;
     this.apiRequest = apiRequest;
+    this.conn = new WebSocket(webSocketURL);
+    this.answersIds = JSON.parse(answersIds);
+    this.results = JSON.parse(results);
     this.buttonVote = this.wrapper.getElementsByClassName('jsButtonVote')[0];
     this.errorMessage = this.wrapper.getElementsByClassName('jsErrorMessage')[0];
     this.pollUid = this.wrapper.getElementsByClassName('jsPollUid')[0].value;
-    this.conn = new WebSocket(webSocketURL);
+    this.payload = {
+        userUid: getCookie('uid'),
+        name: '',
+        answerId: 0
+    };
 
-    this.vote = function() {
+    this.buttonVoteHandler = function() {
         var self = this;
-        var payload = {
-            userUid: '',
-            name: '',
-            answerId: 0
-        };
-
-        var selectedRadio = document.querySelector('input[name="answerRadio"]:checked');
-        if (selectedRadio) {
-            payload.answerId = selectedRadio.value;
-        } else {
-            self.showError('No answer selected. Please choose one.');
-            return;
+        if (!self.preparePayload()) {
+            return false;
         }
-
-        payload.name = document.getElementById('visitorName').value;
-        if (!payload.name) {
-            self.showError('Visitor name is missing.');
-            return;
-        }
-
-        payload.userUid = getCookie('uid');
-
-        if (payload.userUid) {
-            self.sendVote(payload);
-        } else {
-            self.apiRequest.send('POST', 'user', {}, function(resp) {
-                if (resp.success && resp.data.uid) {
-                    setCookie('uid', resp.data.uid);
-                    payload.userUid = resp.data.uid;
-                    self.sendVote(payload);
-                }
-            });
+        if (self.payload.userUid) {
+            self.sendVote(self.payload);
             return true;
         }
+        self.apiRequest.send('POST', 'user', {}, function(resp) {
+            if (resp.success && resp.data.uid) {
+                setCookie('uid', resp.data.uid);
+                self.payload.userUid = resp.data.uid;
+                self.sendVote(self.payload);
+            }
+        });
+    };
+
+    this.preparePayload = function() {
+        var self = this;
+        var selectedRadio = self.wrapper.querySelector('input[name="answerRadio"]:checked');
+        if (selectedRadio) {
+            self.payload.answerId = selectedRadio.value;
+        } else {
+            self.showError('No answer selected. Please choose one.');
+            return false;
+        }
+
+        self.payload.name = document.getElementById('visitorName').value;
+        if (!self.payload.name) {
+            self.showError('Visitor name is missing.');
+            return false;
+        }
+        return true;
     };
 
     this.sendVote = function(payload) {
@@ -53,7 +58,7 @@ function PollVotingForm(wrapper, apiRequest, webSocketURL)
                     command: 'message',
                     message: 'results for poll ' + self.pollUid + ' updated'
                 }));
-                window.location.reload();
+                self.renderResults(resp.data);
             } else {
                 self.showError(resp.message);
                 return false;
@@ -61,26 +66,39 @@ function PollVotingForm(wrapper, apiRequest, webSocketURL)
         })
     };
 
-    this.updateResults = function (data) {
+    this.renderResults = function(results) {
         var self = this;
-        var resultsTable = document.getElementsByClassName('jsResults')[0];
-        console.log(data);
+        var tableBody = self.wrapper.getElementsByClassName('jsResults')[0];
+        var html = '';
+        [].forEach.call(results, function(row){
+            html += '<tr>';
+            html += '<td>' + row.visitorName + '</td>';
+            for(var i = 0; i < self.answersIds.length; i++) {
+                html += '<td>';
+                html += (self.answersIds.indexOf(parseInt(row.answerId)) === i) ? 'x' : '';
+                html += '</td>';
+            }
+            html += '</tr>';
+        });
+        tableBody.innerHTML = html;
     };
 
     this.showError = function(message) {
         this.errorMessage.innerHTML = message;
     };
 
-
     this.init = function() {
         var self = this;
-        self.buttonVote.addEventListener('click', function() { self.vote(); });
-        self.conn.onopen = function(e) {
+        self.renderResults(self.results);
+        self.buttonVote.addEventListener('click', function() {
+            self.buttonVoteHandler();
+        });
+        self.conn.onopen = function(resp) {
             console.log('Connection established!');
             self.conn.send(JSON.stringify({command: 'subscribe', channel: self.pollUid}));
         };
-        self.conn.onmessage = function(e) {
-            self.updateResults(JSON.parse(e.data));
+        self.conn.onmessage = function(resp) {
+            self.renderResults(JSON.parse(resp.data));
         };
     };
 

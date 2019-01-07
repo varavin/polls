@@ -8,27 +8,39 @@ function PollCreationForm(wrapper, apiRequest)
     this.errorMessage = this.wrapper.getElementsByClassName('jsErrorMessage')[0];
     this.questionInput = this.wrapper.getElementsByClassName('jsQuestionInput')[0];
     this.answersInputs = this.wrapper.getElementsByClassName('jsAnswerInput');
+    this.payload = {
+        question: this.questionInput.value,
+        answers: []
+    };
 
-    this.startPoll = function () {
+    this.buttonStartHandler = function () {
         var self = this;
-        var payload = {
-            question: self.questionInput.value,
-            answers: []
-        };
-        [].forEach.call(self.answersInputs, function(input){
-            payload.answers.push({text: input.value});
-        });
-        self.apiRequest.send('POST', 'poll', payload, function(resp){
-            if (resp.success === false) {
-                self.showError(resp.message);
-            }
-            if (resp.data.uid) {
+        if (!self.preparePayload()) {
+            return false;
+        }
+        self.apiRequest.send('POST', 'poll', self.payload, function(resp){
+            if (resp.success) {
                 document.location = '/poll/' + resp.data.uid;
+            } else {
+                self.showError(resp.message);
             }
         })
     };
 
-    this.addAnswer = function() {
+    this.preparePayload = function () {
+        var self = this;
+        [].forEach.call(self.answersInputs, function(input){
+            self.payload.answers.push({text: input.value});
+        });
+        self.payload.question = this.questionInput.value;
+        if (!self.payload.question) {
+            self.showError('Question text is missing');
+            return false;
+        }
+        return true;
+    };
+
+    this.buttonAddAnswerHandler = function() {
         var self = this;
         var node = document.createElement('tr');
         node.className = 'jsAnswerRow';
@@ -44,10 +56,10 @@ function PollCreationForm(wrapper, apiRequest)
     this.init = function() {
         var self = this;
         self.buttonStart.addEventListener('click', function(){
-            self.startPoll();
+            self.buttonStartHandler();
         });
         self.buttonAddAnswer.addEventListener('click', function(){
-            self.addAnswer();
+            self.buttonAddAnswerHandler();
         });
     };
 

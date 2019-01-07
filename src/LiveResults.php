@@ -9,14 +9,12 @@ class LiveResults implements MessageComponentInterface
     protected $clients;
     private $subscriptions;
     private $users;
-    private $app;
 
     public function __construct()
     {
         $this->clients = new \SplObjectStorage;
         $this->subscriptions = [];
         $this->users = [];
-        $this->app = new App();
     }
 
     public function onOpen(ConnectionInterface $conn)
@@ -37,7 +35,8 @@ class LiveResults implements MessageComponentInterface
                     $target = $this->subscriptions[$conn->resourceId];
                     foreach ($this->subscriptions as $id=>$channel) {
                         if ($channel == $target && $id != $conn->resourceId) {
-                            $pollsService = new PollsCRUD($this->app->pdo());
+                            $app = new App();
+                            $pollsService = new PollsCRUD($app->pdo());
                             $poll = $pollsService->read(0, $channel);
                             $results = $poll->getResults();
                             $this->users[$id]->send(json_encode($results));
