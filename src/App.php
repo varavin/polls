@@ -89,10 +89,10 @@ class App
         return $this->payload;
     }
 
-    public function addJsComponent($name)
+    public function addJsComponent($name, $initCode)
     {
         if (!in_array($name, $this->jsComponents) && is_file(self::JS_COMPONENTS_DIR . $name . '.js')) {
-            $this->jsComponents[] = $name;
+            $this->jsComponents[] = compact('name', 'initCode');
         }
     }
 
@@ -122,10 +122,10 @@ class App
         } else if (isset($_SERVER['APP_ENV']) && in_array($_SERVER['APP_ENV'], ['staging', 'local'])) {
             $env = $_SERVER['APP_ENV'];
         }
-        require_once(__DIR__ . '/../config/config.' . $env . '.php');
+        require(__DIR__ . '/../config/config.' . $env . '.php');
     }
 
-    private function getConfigVar($var = null)
+    public function getConfigVar($var = null)
     {
         $path = is_array($var) ? $var : [$var];
         $arr = $this->config;

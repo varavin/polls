@@ -3,7 +3,15 @@
  * @var \Polls\App $this
 */
 
-$this->addJsComponent('PollCreationForm');
+$this->addJsComponent("PollCreationForm", "
+    var elem = null;
+    if (elem = document.getElementsByClassName('jsComponentPollCreationForm')[0]) {
+        jsComponentPollCreationForm = new PollCreationForm(
+            elem, 
+            new APIRequest('" . $this->getConfigVar(['siteRootURL']). "/api/')
+        );
+    }
+");
 
 ?>
 <div class="poll jsComponentPollCreationForm">

@@ -5,7 +5,16 @@
  * @var \Polls\Models\Vote[] $results
  */
 
-$this->addJsComponent('PollVotingForm');
+$this->addJsComponent("PollVotingForm", "
+    var elem = null;
+    if (elem = document.getElementsByClassName('jsComponentPollVotingForm')[0]) {
+        jsComponentPollVotingForm = new PollVotingForm(
+            elem, 
+            new APIRequest('" . $this->getConfigVar(['siteRootURL']). "/api/'),
+            'ws://" . $this->getConfigVar(['websocket', 'host']) . ':' . $this->getConfigVar(['websocket', 'port']) . "'
+        );
+    }
+");
 
 ?>
 <div class="poll">

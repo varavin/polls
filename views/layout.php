@@ -5,6 +5,9 @@
  * @var string $siteRootURL
  * @var \Polls\App $this
  */
+
+$this->addJsComponent("APIRequest", "");
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -39,25 +42,13 @@
     </div>
 </div>
 <script src="<?= $siteRootURL ?>/js/functions.js"></script>
-<script>
-    window.jsConfig = {
-        siteRootURL: '<?= $siteRootURL ?>',
-        components: <?= json_encode($this->getJsComponents()); ?>
-    }
-</script>
 <?php foreach ($this->getJsComponents() as $component): ?>
-    <script src="<?= $siteRootURL ?>/js/components/<?= $component ?>.js"></script>
+    <script src="<?= $siteRootURL ?>/js/components/<?= $component['name'] ?>.js"></script>
 <?php endforeach; ?>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        var elems = null;
         <?php foreach ($this->getJsComponents() as $component): ?>
-            var jsComponent<?= $component ?> = null;
-            if (elems = document.getElementsByClassName('jsComponent<?= $component ?>')) {
-                [].forEach.call(elems, function(el){
-                    var jsComponent<?= $component ?> = new <?= $component ?>(el);
-                });
-            }
+            <?= $component['initCode'] ?>
         <?php endforeach; ?>
     });
 </script>

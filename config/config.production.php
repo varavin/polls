@@ -6,5 +6,9 @@ $this->config = [
         'user' => 'root',
         'password' => '',
     ],
+    'websocket' => [
+        'host' => 'localhost',
+        'port' => '8888',
+    ],
     'siteRootURL' => 'http://polls.local'
 ];

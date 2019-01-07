@@ -1,11 +1,11 @@
-function PollVotingForm(wrapper)
+function PollVotingForm(wrapper, apiRequest, webSocketURL)
 {
     this.wrapper = wrapper;
-    this.apiRequest = new APIRequest();
+    this.apiRequest = apiRequest;
     this.buttonVote = this.wrapper.getElementsByClassName('jsButtonVote')[0];
     this.errorMessage = this.wrapper.getElementsByClassName('jsErrorMessage')[0];
     this.pollUid = this.wrapper.getElementsByClassName('jsPollUid')[0].value;
-    this.conn = new WebSocket('ws://localhost:8888');
+    this.conn = new WebSocket(webSocketURL);
 
     this.vote = function() {
         var self = this;
@@ -77,7 +77,7 @@ function PollVotingForm(wrapper)
         self.buttonVote.addEventListener('click', function() { self.vote(); });
         self.conn.onopen = function(e) {
             console.log('Connection established!');
-            self.conn.send(JSON.stringify({command: "subscribe", channel: self.pollUid}));
+            self.conn.send(JSON.stringify({command: 'subscribe', channel: self.pollUid}));
         };
         self.conn.onmessage = function(e) {
             self.updateResults(JSON.parse(e.data));

@@ -1,7 +1,7 @@
-function PollCreationForm(wrapper)
+function PollCreationForm(wrapper, apiRequest)
 {
     this.wrapper = wrapper;
-    this.apiRequest = new APIRequest();
+    this.apiRequest = apiRequest;
     this.buttonStart = this.wrapper.getElementsByClassName('jsStartPoll')[0];
     this.buttonAddAnswer = this.wrapper.getElementsByClassName('jsAddAnswer')[0];
     this.answersRows = this.wrapper.getElementsByClassName('jsAnswerRow');
@@ -32,7 +32,7 @@ function PollCreationForm(wrapper)
         var self = this;
         var node = document.createElement('tr');
         node.className = 'jsAnswerRow';
-        node.innerHTML = '<th>Answer ' + (self.answersRows.length + 1) + ':</th><td><input type="text" value="No" class="input-text jsAnswerInput" /></td>';
+        node.innerHTML = '<th>Answer ' + (self.answersRows.length + 1) + ':</th><td><input type="text" value="No" class="jsAnswerInput input-text" /></td>';
         var lastRow = self.answersRows.item(self.answersRows.length - 1);
         lastRow.parentNode.insertBefore(node, lastRow.nextSibling);
     };
@@ -43,8 +43,12 @@ function PollCreationForm(wrapper)
 
     this.init = function() {
         var self = this;
-        self.buttonStart.addEventListener('click', function(){ self.startPoll(); });
-        self.buttonAddAnswer.addEventListener('click', function(){ self.addAnswer(); });
+        self.buttonStart.addEventListener('click', function(){
+            self.startPoll();
+        });
+        self.buttonAddAnswer.addEventListener('click', function(){
+            self.addAnswer();
+        });
     };
 
     this.init();
