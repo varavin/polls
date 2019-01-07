@@ -33,4 +33,10 @@ class Controller
     {
         return $this->view;
     }
+
+    public function show404()
+    {
+        header('HTTP/1.0 404 Not Found');
+        exit;
+    }
 }

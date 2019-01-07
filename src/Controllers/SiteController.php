@@ -16,6 +16,9 @@ class SiteController extends Controller
     {
         $pollsService = new PollsCRUD($this->pdo());
         $poll = $pollsService->read(0, $uid);
+        if (!$poll->getId()) {
+            $this->show404();
+        }
         $results = $poll->getResults();
         $websocketString = 'ws://' . $this->appConfig['websocket']['host'] . ':' . $this->appConfig['websocket']['port'];
         $apiURL = $this->appConfig['siteRootURL'] . '/api/';

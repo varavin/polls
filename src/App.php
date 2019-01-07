@@ -49,7 +49,7 @@ class App
             $controller = new APIController($this->pdo());
             $action = isset(self::API_MAP[$method][$chunks[1]]) ? self::API_MAP[$method][$chunks[1]] : false;
             $parameters = [$payload];
-        } else if ($chunks[0] === 'poll') {
+        } else if ($chunks[0] === 'poll' && $chunks[1]) {
             $controller = new SiteController($this->pdo(), $this->config);
             $action = 'poll';
             $parameters = [$chunks[1]];
