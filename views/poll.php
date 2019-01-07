@@ -1,16 +1,20 @@
 <?php
 /**
+ * @var \Polls\App $this
  * @var \Polls\Models\Poll $poll
  * @var \Polls\Models\Vote[] $results
  */
+
+$this->addJsComponent('PollVotingForm');
+
 ?>
 <div class="poll">
     <h1>
         <?= $poll->getQuestion() ?>
     </h1>
 
-    <div class="ex2-question" id="pollVotingForm">
-        <input type="hidden" id="pollUid" value="<?= $poll->getUid() ?>">
+    <div class="jsComponentPollVotingForm ex2-question">
+        <input type="hidden" class="jsPollUid" value="<?= $poll->getUid() ?>">
         <div class="ex2-question__label">
             Your name:
         </div>
@@ -26,9 +30,9 @@
             <?php endforeach ?>
         </div>
         <div class="ex2-question__submit">
-            <input id="buttonVote" type="submit" class="btn" value="Submit">
+            <input type="submit" class="jsButtonVote btn" value="Submit">
         </div>
-        <div><p id="errorMessage" class="errorMessage"></p></div>
+        <div><p class="jsErrorMessage errorMessage"></p></div>
     </div>
     <h1>
         Results
@@ -43,7 +47,7 @@
             <?php endforeach ?>
         </tr>
         </thead>
-        <tbody>
+        <tbody class="jsResults">
         <?php foreach ($results as $result): ?>
             <tr>
                 <td><?= $result->getVisitorName() ?></td>

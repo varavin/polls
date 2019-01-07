@@ -3,6 +3,7 @@
  * @var string $content
  * @var string $pageTitle
  * @var string $siteRootURL
+ * @var \Polls\App $this
  */
 ?>
 <!DOCTYPE html>
@@ -37,15 +38,28 @@
         <?= $content ?>
     </div>
 </div>
+<script src="<?= $siteRootURL ?>/js/functions.js"></script>
 <script>
     window.jsConfig = {
-        siteRootURL: '<?= $siteRootURL ?>'
+        siteRootURL: '<?= $siteRootURL ?>',
+        components: <?= json_encode($this->getJsComponents()); ?>
     }
 </script>
-<script src="<?= $siteRootURL ?>/js/functions.js"></script>
-<script src="<?= $siteRootURL ?>/js/apiRequest.js"></script>
-<script src="<?= $siteRootURL ?>/js/pollCreationForm.js"></script>
-<script src="<?= $siteRootURL ?>/js/pollVotingForm.js"></script>
-<script src="<?= $siteRootURL ?>/js/app.js"></script>
+<?php foreach ($this->getJsComponents() as $component): ?>
+    <script src="<?= $siteRootURL ?>/js/components/<?= $component ?>.js"></script>
+<?php endforeach; ?>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var elems = null;
+        <?php foreach ($this->getJsComponents() as $component): ?>
+            var jsComponent<?= $component ?> = null;
+            if (elems = document.getElementsByClassName('jsComponent<?= $component ?>')) {
+                [].forEach.call(elems, function(el){
+                    var jsComponent<?= $component ?> = new <?= $component ?>(el);
+                });
+            }
+        <?php endforeach; ?>
+    });
+</script>
 </body>
 </html>

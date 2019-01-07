@@ -10,8 +10,10 @@ class App
     private $config = [];
     private $pdo = null;
     private $payload = [];
+    private $jsComponents = [];
 
     const VIEWS_DIR = __DIR__ . '/../views/';
+    const JS_COMPONENTS_DIR = __DIR__ .'/../public/js/components/';
     const API_MAP = [
         'GET' => [
             'user' => 'readUser'
@@ -85,6 +87,18 @@ class App
     public function payload()
     {
         return $this->payload;
+    }
+
+    public function addJsComponent($name)
+    {
+        if (!in_array($name, $this->jsComponents) && is_file(self::JS_COMPONENTS_DIR . $name . '.js')) {
+            $this->jsComponents[] = $name;
+        }
+    }
+
+    public function getJsComponents()
+    {
+        return $this->jsComponents;
     }
 
     public function renderView($view, $variables = array())

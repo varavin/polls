@@ -1,12 +1,13 @@
-function PollCreationForm(apiRequest)
+function PollCreationForm(wrapper)
 {
-    this.apiRequest = apiRequest;
-    this.buttonStart = document.getElementById('startPoll');
-    this.buttonAddAnswer = document.getElementById('addAnswer');
-    this.answersRows = document.getElementsByClassName('jsAnswerRow');
-    this.errorMessage = document.getElementById('errorMessage');
-    this.questionInput = document.getElementById('questionInput');
-    this.answersInputs = document.getElementsByClassName('jsAnswerInput');
+    this.wrapper = wrapper;
+    this.apiRequest = new APIRequest();
+    this.buttonStart = this.wrapper.getElementsByClassName('jsStartPoll')[0];
+    this.buttonAddAnswer = this.wrapper.getElementsByClassName('jsAddAnswer')[0];
+    this.answersRows = this.wrapper.getElementsByClassName('jsAnswerRow');
+    this.errorMessage = this.wrapper.getElementsByClassName('jsErrorMessage')[0];
+    this.questionInput = this.wrapper.getElementsByClassName('jsQuestionInput')[0];
+    this.answersInputs = this.wrapper.getElementsByClassName('jsAnswerInput');
 
     this.startPoll = function () {
         var self = this;

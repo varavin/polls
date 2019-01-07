@@ -43,6 +43,9 @@ class AnswersCRUD extends CRUD
 
     public function getByPollId(int $pollId) : array
     {
+        if (!$pollId) {
+            return [];
+        }
         $result = [];
         $sql = 'SELECT * FROM answers WHERE pollId = ' . intval($pollId) . ' ORDER BY id';
         $data = $this->pdo()->query($sql)->fetchAll(\PDO::FETCH_ASSOC);

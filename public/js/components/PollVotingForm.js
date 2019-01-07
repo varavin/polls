@@ -1,9 +1,10 @@
-function PollVotingForm(apiRequest)
+function PollVotingForm(wrapper)
 {
-    this.apiRequest = apiRequest;
-    this.buttonVote = document.getElementById('buttonVote');
-    this.errorMessage = document.getElementById('errorMessage');
-    this.pollUid = document.getElementById('pollUid').value;
+    this.wrapper = wrapper;
+    this.apiRequest = new APIRequest();
+    this.buttonVote = this.wrapper.getElementsByClassName('jsButtonVote')[0];
+    this.errorMessage = this.wrapper.getElementsByClassName('jsErrorMessage')[0];
+    this.pollUid = this.wrapper.getElementsByClassName('jsPollUid')[0].value;
     this.conn = new WebSocket('ws://localhost:8888');
 
     this.vote = function() {
@@ -61,6 +62,8 @@ function PollVotingForm(apiRequest)
     };
 
     this.updateResults = function (data) {
+        var self = this;
+        var resultsTable = document.getElementsByClassName('jsResults')[0];
         console.log(data);
     };
 
