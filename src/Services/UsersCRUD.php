@@ -22,7 +22,11 @@ class UsersCRUD extends CRUD
      */
     public function read(string $uid) : User
     {
-        return $this->getByUid($uid);
+        $user = $this->getByUid($uid);
+        if (!$user->getId()) {
+            $this->setStatus(false, 'User not found');
+        }
+        return $user;
     }
 
     /**
