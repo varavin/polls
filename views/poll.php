@@ -14,7 +14,7 @@ $this->addJsComponent("PollVotingForm", "
             elem, 
             new APIRequest('" . $apiURL . "'),
             '" . $websocketString . "',
-            '" . json_encode(array_keys($poll->getAnswers())) . "',
+            '" . json_encode($poll->getAnswersIds()) . "',
             '" . json_encode($poll->getResults()) . "'
         );
     }

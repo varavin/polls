@@ -29,6 +29,7 @@ function PollCreationForm(wrapper, apiRequest)
 
     this.preparePayload = function () {
         var self = this;
+        self.payload.answers = [];
         [].forEach.call(self.answersInputs, function(input){
             self.payload.answers.push({text: input.value});
         });

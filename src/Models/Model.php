@@ -2,6 +2,7 @@
 
 namespace Polls\Models;
 
+use phpDocumentor\Reflection\Types\This;
 use Polls\Interfaces\ModelInterface;
 
 /**
@@ -11,27 +12,44 @@ use Polls\Interfaces\ModelInterface;
  */
 class Model implements ModelInterface
 {
-    public function __construct(\PDO $pdo = null)
+    /**
+     * Model constructor.
+     * @param \PDO|null $pdo
+     * @param array $props
+     */
+    public function __construct(\PDO $pdo = null, array $props = [])
     {
         $this->pdo = $pdo;
+        $this->fill($props);
     }
 
-    public function pdo()
+    public function pdo(): \PDO
     {
         return $this->pdo;
     }
 
-    public function fill(array $data)
+    public function fillable(): array
+    {
+        return [];
+    }
+
+    public function fill(array $props): bool
+    {
+        $fillable = $this->fillable();
+        foreach ($props as $key => $value) {
+            if (property_exists($this, $key) && in_array($key, $fillable)) {
+                $this->$key = $value;
+            }
+        }
+        return true;
+    }
+
+    public function validate(): bool
     {
 
     }
 
-    public function validate()
-    {
-
-    }
-
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
 
     }

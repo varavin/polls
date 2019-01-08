@@ -2,7 +2,7 @@
 
 namespace Polls\Models;
 
-use Polls\Services\AnswersCRUD;
+use Polls\Services\PollsCRUD;
 use Polls\Services\VotesCRUD;
 
 /**
@@ -13,36 +13,25 @@ use Polls\Services\VotesCRUD;
  */
 class User extends Model
 {
-    private $id = 0;
-    private $uid = '';
-
-    public function __construct(\PDO $pdo)
-    {
-        parent::__construct($pdo);
-    }
+    public $id = 0;
+    public $uid = '';
 
     public function getId()
     {
         return $this->id;
     }
 
-    public function fill(array $data = [])
+    public function fillable(): array
     {
-        if (array_key_exists('id', $data)) {
-            $this->id = $data['id'];
-        }
-        if (array_key_exists('uid', $data)) {
-            $this->uid = $data['uid'];
-        }
-        return true;
+        return ['id', 'uid'];
     }
 
-    public function validate()
+    public function validate(): bool
     {
         return strlen($this->uid) === 32 && intval($this->id) >= 0;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'id' => $this->id,
@@ -50,12 +39,10 @@ class User extends Model
         ];
     }
 
-    public function hasVoted(int $pollId) : bool
+    public function hasVoted(Poll $poll) : bool
     {
-        $answersService = new AnswersCRUD($this->pdo());
-        $answersIds = array_keys($answersService->getByPollId($pollId));
         $votesService = new VotesCRUD($this->pdo());
-        $votes = $votesService->readMultiple($answersIds, $this->getId());
+        $votes = $votesService->readMultiple($poll->getAnswersIds(), $this->getId());
         return count($votes) > 0;
     }
 }

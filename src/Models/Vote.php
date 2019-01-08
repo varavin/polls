@@ -13,10 +13,10 @@ namespace Polls\Models;
  */
 class Vote extends Model
 {
-    private $id = null;
-    private $userId = null;
-    private $answerId = null;
-    private $visitorName = null;
+    public $id = null;
+    public $userId = null;
+    public $answerId = null;
+    public $visitorName = null;
 
     public function setId(int $id)
     {
@@ -43,29 +43,17 @@ class Vote extends Model
         return $this->visitorName;
     }
 
-    public function fill(array $data = [])
+    public function fillable(): array
     {
-        if (array_key_exists('id', $data)) {
-            $this->id = $data['id'];
-        }
-        if (array_key_exists('userId', $data)) {
-            $this->userId = $data['userId'];
-        }
-        if (array_key_exists('answerId', $data)) {
-            $this->answerId = $data['answerId'];
-        }
-        if (array_key_exists('visitorName', $data)) {
-            $this->visitorName = $data['visitorName'];
-        }
-        return true;
+        return ['id', 'userId', 'answerId', 'visitorName'];
     }
 
-    public function validate()
+    public function validate(): bool
     {
         return $this->userId && $this->answerId && $this->visitorName;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'id' => $this->id,

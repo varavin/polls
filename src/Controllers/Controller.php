@@ -17,11 +17,11 @@ class Controller
     private $view = null;
     public $appConfig = [];
 
-    public function __construct(\PDO $pdo, array $config = [])
+    public function __construct(\PDO $pdo, array $appConfig = [])
     {
         $this->view = new View();
         $this->pdo = $pdo;
-        $this->appConfig = $config;
+        $this->appConfig = $appConfig;
     }
 
     public function pdo()

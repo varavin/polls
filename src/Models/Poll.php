@@ -15,10 +15,10 @@ use Polls\Services\VotesCRUD;
  */
 class Poll extends Model
 {
-    private $id = 0;
-    private $uid = '';
-    private $question = '';
-    private $answers = [];
+    public $id = 0;
+    public $uid = '';
+    public $question = '';
+    public $answers = [];
 
     public function getQuestion()
     {
@@ -43,9 +43,13 @@ class Poll extends Model
         return $this->answers;
     }
 
-    public function setAnswers(array $answers)
+    public function getAnswersIds()
     {
-        $this->answers = $answers;
+        $result = [];
+        foreach ($this->answers as $answer) {
+            $result[] = intval($answer->getId());
+        }
+        return $result;
     }
 
     public function setId(int $id)
@@ -53,21 +57,17 @@ class Poll extends Model
         $this->id = $id;
     }
 
-    public function fill(array $data)
+    public function fillable(): array
     {
-        if (array_key_exists('id', $data)) {
-            $this->id = $data['id'];
-        }
-        if (array_key_exists('uid', $data)) {
-            $this->uid = $data['uid'];
-        }
-        if (array_key_exists('question', $data)) {
-            $this->question = $data['question'];
-        }
-        if (array_key_exists('answers', $data) && is_array($data['answers'])) {
-            foreach ($data['answers'] as $answerData) {
-                $answer = new Answer();
-                if ($answer->fill($answerData)) {
+        return ['id', 'uid', 'question'];
+    }
+
+    public function fill(array $props): bool
+    {
+        parent::fill($props);
+        if (array_key_exists('answers', $props) && is_array($props['answers'])) {
+            foreach ($props['answers'] as $answer) {
+                if ($answer instanceof Answer) {
                     $this->answers[] = $answer;
                 }
             }
@@ -75,12 +75,12 @@ class Poll extends Model
         return true;
     }
 
-    public function validate()
+    public function validate(): bool
     {
-        return strlen($this->uid) === 32 && intval($this->id) >= 0;
+        return strlen($this->uid) === 32 && intval($this->id) >= 0 && count($this->answers) > 0;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'id' => $this->id,
@@ -92,9 +92,8 @@ class Poll extends Model
 
     public function getResults() : array
     {
-        $answersIds = array_keys($this->getAnswers());
         $votesService = new VotesCRUD($this->pdo());
-        $results = $votesService->readMultiple($answersIds);
+        $results = $votesService->readMultiple($this->getAnswersIds());
         return $results;
     }
 }

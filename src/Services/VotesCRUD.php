@@ -4,28 +4,46 @@ namespace Polls\Services;
 
 use Polls\Models\User;
 use Polls\Models\Vote;
-use Polls\Models\Answer;
+use Polls\Models\Poll;
 
 class VotesCRUD extends CRUD
 {
-    public function create(User $user, Answer $answer, array $data) : Vote
+    /**
+     * @param User $user
+     * @param Poll $poll
+     * @param array $data
+     * @return Vote
+     */
+    public function create(User $user, Poll $poll, array $data) : Vote
     {
+        $blankVote = new Vote($this->pdo());
         if (!isset($data['name'])) {
-            $this->setStatus(false, 'Visitor name is missing.');
-            return new Vote();
+            $this->setStatus(false, 'Visitor name is missing');
+            return $blankVote;
         }
 
-        // validating that user has not voted for that poll before
-        if ($user->hasVoted($answer->getPollId())) {
+        if (!isset($data['answerId']) || !in_array($data['answerId'], $poll->getAnswersIds())) {
+            $this->setStatus(false, 'Wrong answer ID');
+            return $blankVote;
+        }
+
+        if ($user->hasVoted($poll)) {
             $this->setStatus(false, 'This user has already voted');
-            return new Vote();
+            return $blankVote;
         }
 
         // finally saving the votes data
-        $voteData = ['userId' => $user->getId(), 'answerId' => $answer->getId(), 'visitorName' => $data['name']];
-        $vote = new Vote();
-        if ($vote->fill($voteData) && $vote->validate()) {
+        $voteData = [
+            'userId' => $user->getId(),
+            'answerId' => $data['answerId'],
+            'visitorName' => $data['name']
+        ];
+        $vote = new Vote($this->pdo(), $voteData);
+        if ($vote->validate()) {
             $vote = $this->saveVote($user, $vote);
+        } else {
+            $this->setStatus(false, 'Wrong vote data');
+            return $blankVote;
         }
 
         return $vote;
@@ -37,14 +55,19 @@ class VotesCRUD extends CRUD
      */
     public function read(int $id) : Vote
     {
+        $blankVote = new Vote($this->pdo());
         $sql = 'SELECT * FROM votes WHERE id = ' . intval($id);
         $row = $this->pdo()->query($sql)->fetch(\PDO::FETCH_ASSOC);
-        $vote = new Vote();
-        if ($row && $vote->fill($row) && $vote->validate()) {
-            return $vote;
-        } else {
-            return new Vote();
+        if (!$row) {
+            $this->setStatus(false, 'Vote not found');
+            return $blankVote;
         }
+        $vote = new Vote($this->pdo(), $row);
+        if (!$vote->validate()) {
+            $this->setStatus(false, 'Wrong vote data');
+            return $blankVote;
+        }
+        return $vote;
     }
 
     /**
@@ -70,9 +93,12 @@ class VotesCRUD extends CRUD
         $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
         $result = [];
         foreach ($rows as $row) {
-            $vote = new Vote();
-            if ($vote->fill($row) && $vote->validate()) {
+            $vote = new Vote($this->pdo(), $row);
+            if ($vote->validate()) {
                 $result[] = $vote;
+            } else {
+                $this->setStatus(false, 'Wrong vote data');
+                return [];
             }
         }
         return $result;

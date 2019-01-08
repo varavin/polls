@@ -50,27 +50,32 @@ class APIController extends Controller
         $user = $usersService->read($uid);
         if (!$user->getId()) {
             return $this->view()->render('json', [
-                'data' => $user,
+                'data' => [],
                 'success' => $usersService->getSuccess(),
                 'message' => $usersService->getMessage()
             ]);
         };
 
         $answerId = isset($payload['answerId']) ? $payload['answerId'] : null;
-        $answersService = new AnswersCRUD($this->pdo());
-        $answer = $answersService->read($answerId);
-        if (!$answer->getId()) {
+        $pollsService = new PollsCRUD($this->pdo());
+        $poll = $pollsService->getByAnswerId($answerId);
+        if (!$poll->getId()) {
             return $this->view()->render('json', [
-                'success' => $answersService->getSuccess(),
-                'message' => $answersService->getMessage()
+                'data' => [],
+                'success' => $pollsService->getSuccess(),
+                'message' => $pollsService->getMessage()
             ]);
-        }
+        };
 
         $votesService = new VotesCRUD($this->pdo());
-        $votesService->create($user, $answer, $payload);
-
-        $pollsService = new PollsCRUD($this->pdo());
-        $poll = $pollsService->read($answer->getPollId());
+        $vote = $votesService->create($user, $poll, $payload);
+        if (!$vote->getId()) {
+            return $this->view()->render('json', [
+                'data' => [],
+                'success' => $votesService->getSuccess(),
+                'message' => $votesService->getMessage()
+            ]);
+        }
 
         return $this->view()->render('json', [
             'data' => $poll->getResults(),
