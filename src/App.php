@@ -9,7 +9,9 @@ class App
 {
     public $config = [];
     private $pdo = null;
+    private $autotests = false;
 
+    const AUTOTESTS_MODE = true;
     const API_MAP = [
         'GET' => [
             'user' => 'readUser'
@@ -21,8 +23,9 @@ class App
         ]
     ];
 
-    public function __construct()
+    public function __construct(bool $autotests = false)
     {
+        $this->autotests = $autotests;
         $this->loadConfig();
     }
 
@@ -75,9 +78,10 @@ class App
     public function pdo()
     {
         if (!$this->pdo instanceof \PDO) {
-            $host = 'mysql:host=' . $this->config['db']['host'] . ';dbname=' . $this->config['db']['database'];
-            $user = $this->config['db']['user'];
-            $pass = $this->config['db']['password'];
+            $dbConfig = $this->config[$this->autotests ? 'db_tests' : 'db'];
+            $host = 'mysql:host=' . $dbConfig['host'] . ';dbname=' . $dbConfig['database'];
+            $user = $dbConfig['user'];
+            $pass = $dbConfig['password'];
             $this->pdo = new \PDO($host, $user, $pass);
         }
         return $this->pdo;

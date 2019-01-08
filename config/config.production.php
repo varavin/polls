@@ -6,6 +6,12 @@ $this->config = [
         'user' => 'root',
         'password' => '',
     ],
+    'db_tests' => [
+        'host' => '127.0.0.1',
+        'database' => 'polls_tests',
+        'user' => 'root',
+        'password' => '',
+    ],
     'websocket' => [
         'host' => 'localhost',
         'port' => '8888',
