@@ -18,15 +18,15 @@ One of the main requirements was to avoid using any PHP or JS frameworks. Everyt
 
 * Clone the repository and run `composer install`.
 
-* Create the database from the dump file: `./database/database.sql`.
+* Create MySQL database from the dump file: `./database/database.sql`.
 
 * Create the test database (to be used for autotests) from the same dump file: `./database/database.sql`.
 
-* Start the web server using `./public` folder as server root folder.
+* Start the web server using `./public` folder as server root folder. Make sure that PHP 7.2+ is used.
 
 * Fill the database and websocket parameters in `./config/config.production.php`. You must also fill the `siteRootURL` param there - fully qualified URL of the website home page (no trailing slash). Note the `db_tests` group of parameters - they are specifying the database for autotests.   
 
-* Start the websocket server: `php ./console/ws.php`. The app will work without it, but websocket server is required to update the polling results in real time.
+* Start the websocket server: `php ./console/ws.php`. Although the app can work without it, websocket server is required to update the polling results in real time.
 
 * Open the home page in browser, create the poll and try to vote. Run other browsers or "incognito mode" browser instances to imitate multiple visitors.
 
@@ -34,7 +34,7 @@ One of the main requirements was to avoid using any PHP or JS frameworks. Everyt
 
 * To run autotests, run `./vendor/bin/phpunit --bootstrap vendor/autoload.php tests`. 
 
-* To be honest, the test coverage is far from full, since it was a test task and I had limited time. But there are some tests for models and services, including a few that use test database. 
+* The test coverage is far from full, since it was a test task and I had limited time. But there are some tests for models and services, including a few that use test database. 
 
  
 
