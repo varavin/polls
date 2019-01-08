@@ -2,7 +2,6 @@
 
 namespace Polls\Controllers;
 
-use Polls\Services\AnswersCRUD;
 use Polls\Services\PollsCRUD;
 use Polls\Services\UsersCRUD;
 use Polls\Services\VotesCRUD;

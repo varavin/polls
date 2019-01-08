@@ -4,7 +4,6 @@ namespace Polls;
 
 use Polls\Controllers\APIController;
 use Polls\Controllers\SiteController;
-use Polls\Services\VotesCRUD;
 
 class App
 {
@@ -36,10 +35,6 @@ class App
         $parameters = [];
         $pageTitle = '';
         $siteRootURL = $this->config['siteRootURL'];
-
-//        $votesService = new \Polls\Services\VotesCRUD($this->pdo());
-//        $tmp = $votesService->read(2);
-//        exit;
 
         if (count($chunks) === 0) {
             $controller = new SiteController($this->pdo(), $this->config);

@@ -2,7 +2,6 @@
 
 namespace Polls\Models;
 
-use Polls\Services\AnswersCRUD;
 use Polls\Services\VotesCRUD;
 
 /**
