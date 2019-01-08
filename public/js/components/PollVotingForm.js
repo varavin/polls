@@ -5,6 +5,7 @@ function PollVotingForm(wrapper, apiRequest, webSocketURL, answersIds, results)
     this.conn = new WebSocket(webSocketURL);
     this.answersIds = JSON.parse(answersIds);
     this.results = JSON.parse(results);
+    this.voteForm = this.wrapper.getElementsByClassName('jsVoteForm')[0];
     this.buttonVote = this.wrapper.getElementsByClassName('jsButtonVote')[0];
     this.errorMessage = this.wrapper.getElementsByClassName('jsErrorMessage')[0];
     this.pollUid = this.wrapper.getElementsByClassName('jsPollUid')[0].value;
@@ -59,6 +60,7 @@ function PollVotingForm(wrapper, apiRequest, webSocketURL, answersIds, results)
                     message: 'results for poll ' + self.pollUid + ' updated'
                 }));
                 self.renderResults(resp.data);
+                self.voteForm.remove();
             } else {
                 self.showError(resp.message);
                 return false;

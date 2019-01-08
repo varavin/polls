@@ -33,12 +33,19 @@ class Model implements ModelInterface
         return [];
     }
 
+    public function fillableInteger(): array
+    {
+        return ['id', 'pollId', 'answerId', 'userId'];
+    }
+
     public function fill(array $props): bool
     {
         $fillable = $this->fillable();
         foreach ($props as $key => $value) {
             if (property_exists($this, $key) && in_array($key, $fillable)) {
-                $this->$key = $value;
+                $this->$key = in_array($key, $this->fillableInteger())
+                    ? intval($value)
+                    : $value;
             }
         }
         return true;

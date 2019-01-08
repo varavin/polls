@@ -26,7 +26,7 @@ $this->addJsComponent("PollVotingForm", "
         <?= $poll->getQuestion() ?>
     </h1>
 
-    <div class="ex2-question">
+    <div class="jsVoteForm ex2-question">
         <input type="hidden" class="jsPollUid" value="<?= $poll->getUid() ?>">
         <div class="ex2-question__label">
             Your name:

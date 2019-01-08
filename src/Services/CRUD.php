@@ -15,6 +15,10 @@ class CRUD
     private $success = true;
     private $message = '';
 
+    /**
+     * CRUD constructor.
+     * @param \PDO $pdo
+     */
     public function __construct(\PDO $pdo)
     {
         $this->pdo = $pdo;

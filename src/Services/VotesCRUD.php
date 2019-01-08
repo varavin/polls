@@ -41,12 +41,11 @@ class VotesCRUD extends CRUD
         $vote = new Vote($this->pdo(), $voteData);
         if ($vote->validate()) {
             $vote = $this->saveVote($user, $vote);
+            return $vote;
         } else {
             $this->setStatus(false, 'Wrong vote data');
             return $blankVote;
         }
-
-        return $vote;
     }
 
     /**
@@ -63,11 +62,12 @@ class VotesCRUD extends CRUD
             return $blankVote;
         }
         $vote = new Vote($this->pdo(), $row);
-        if (!$vote->validate()) {
+        if ($vote->validate()) {
+            return $vote;
+        } else {
             $this->setStatus(false, 'Wrong vote data');
             return $blankVote;
         }
-        return $vote;
     }
 
     /**
@@ -78,10 +78,7 @@ class VotesCRUD extends CRUD
     public function readMultiple(array $ids, int $userId = null) : array
     {
         $placeholders = array_fill(0, count($ids), '?');
-        $sql = 'SELECT * FROM votes WHERE answerId IN (' . implode(',', $placeholders) . ') ';
-        if ($userId) {
-            $sql .= ' AND userId = ?';
-        }
+        $sql = 'SELECT * FROM votes WHERE answerId IN (' . implode(',', $placeholders) . ') ' . ($userId ? ' AND userId = ? ' : '');
         $query = $this->pdo()->prepare($sql);
         for ($i = 1; $i <= count($ids); $i++) {
             $query->bindParam($i, $ids[$i - 1]);

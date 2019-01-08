@@ -43,16 +43,14 @@ class PollsCRUD extends CRUD
         $poll->setId($id);
 
         // saving answers
-        $unsavedAnswers = $poll->getAnswers();
-        $poll->answers = [];
-        foreach ($unsavedAnswers as $answer) {
-            $poll->answers[] = $this->createAnswer([
+        foreach ($poll->getAnswers() as $answer) {
+            $this->createAnswer([
                 'pollId' => $poll->getId(),
                 'text' => $answer->getText()
             ]);
         }
 
-        return $poll;
+        return $this->read($poll->getId());
     }
 
     public function read(int $id, string $uid = ''): Poll
