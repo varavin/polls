@@ -27,7 +27,6 @@ CREATE TABLE `answers` (
   `pollId` int(10) unsigned NOT NULL,
   `text` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `PollID_Text` (`pollId`,`text`),
   CONSTRAINT `FK_answers_polls` FOREIGN KEY (`pollId`) REFERENCES `polls` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
