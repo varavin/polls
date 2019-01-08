@@ -76,16 +76,23 @@ class Poll extends Model
 
     public function validate(): bool
     {
-        return strlen($this->uid) === 32 && intval($this->id) >= 0 && count($this->answers) > 0;
+        return strlen($this->uid) === 32
+            && intval($this->id) >= 0
+            && count($this->answers) > 0
+            && strlen($this->question) > 0;
     }
 
     public function jsonSerialize(): array
     {
+        $answersArray = [];
+        foreach ($this->answers as $answer) {
+            $answersArray[] = $answer->jsonSerialize();
+        }
         return [
             'id' => $this->id,
             'uid' => $this->uid,
             'question' => $this->question,
-            'answers' => $this->answers
+            'answers' => $answersArray
         ];
     }
 

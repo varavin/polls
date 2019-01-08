@@ -37,7 +37,7 @@ class Answer extends Model
 
     public function fillable(): array
     {
-        return ['id', 'uid', 'text', 'pollId'];
+        return ['id', 'text', 'pollId'];
     }
 
     public function validate(): bool

@@ -21,6 +21,11 @@ class User extends Model
         return $this->id;
     }
 
+    public function getUid()
+    {
+        return $this->uid;
+    }
+
     public function fillable(): array
     {
         return ['id', 'uid'];
