@@ -33,30 +33,26 @@ class App
     {
         $chunks = $this->getPathChunks();
         $method = $_SERVER['REQUEST_METHOD'] ? $_SERVER['REQUEST_METHOD'] : 'GET';
-        $controller = null;
+        $controller = new SiteController($this->pdo(), $this->config);;
         $action = '';
         $parameters = [];
         $pageTitle = '';
         $siteRootURL = $this->config['siteRootURL'];
 
         if (count($chunks) === 0) {
-            $controller = new SiteController($this->pdo(), $this->config);
             $action = 'index';
             $pageTitle = 'Create new poll';
-        }
-
-        if ($chunks[0] === 'api') {
+        } else if ($chunks[0] === 'poll' && $chunks[1]) {
+            $action = 'poll';
+            $parameters = [$chunks[1]];
+            $pageTitle = 'Poll voting and results';
+        } else if ($chunks[0] === 'api') {
             $payload = ($method === 'POST')
                 ? json_decode(file_get_contents('php://input'), true)
                 : array_slice($chunks, 2);
             $controller = new APIController($this->pdo());
             $action = isset(self::API_MAP[$method][$chunks[1]]) ? self::API_MAP[$method][$chunks[1]] : false;
             $parameters = [$payload];
-        } else if ($chunks[0] === 'poll' && $chunks[1]) {
-            $controller = new SiteController($this->pdo(), $this->config);
-            $action = 'poll';
-            $parameters = [$chunks[1]];
-            $pageTitle = 'Poll voting and results';
         }
 
         if (!$action || !method_exists($controller, $action)) {
